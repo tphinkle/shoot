@@ -37,3 +37,4 @@ class TilemapCollisionSystem():
         bottom_y = coord_transforms.GetEntityBottomY(entity)
         entity.position.y = entity.position.y - bottom_y%16
         entity.velocity.vy = 0
+        entity.gravity.grounded = True

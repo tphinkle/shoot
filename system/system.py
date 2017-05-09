@@ -38,7 +38,7 @@ class System:
     def __init__(self):
         self.InitializeSDL()
         self.InitializeTimers()
-        self.InitializeSystems()
+        self.InitializeSubsystems()
         self.InitializeWorld()
 
 
@@ -78,7 +78,7 @@ class System:
         self.game_timer = timer.Timer(self.game_period)
 
 
-    def InitializeSystems(self):
+    def InitializeSubsystems(self):
         # Systems
         self.render_system = render_system.RenderSystem(self.sdl_renderer, self.window)
         self.controller_input_system = controller_input_system.ControllerInputSystem()
@@ -125,7 +125,7 @@ class System:
                 self.movement_process_system.ProcessMovement(self.world, self.game_timer.dt)
                 self.ai_system.ProcessAI(self.world)
                 self.tilemap_collision_system.ProcessTilemapCollisions(self.world)
-                self.gravity_system.CheckGrounded(self.world)
+                #self.gravity_system.CheckGrounded(self.world)
 
 
             # Render

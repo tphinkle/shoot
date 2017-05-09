@@ -19,9 +19,11 @@ class GravitySystem():
                     else:
                         entity.acceleration.ay = 0
 
+    '''
     def CheckGrounded(self, world):
         for key, entity in world.entity_manager.entitys.iteritems():
             if entity.gravity != None:
                 bottom_left_pixel = coord_transforms.GetEntityBottomLeftPixel(entity)
                 bottom_right_pixel = coord_transforms.GetEntityBottomRightPixel(entity)
                 entity.gravity.grounded = True
+    '''

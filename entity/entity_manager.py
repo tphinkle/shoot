@@ -19,9 +19,12 @@ import shape_component
 import actions_component
 import controller_input_component
 import ai_component
-import following_component
+import following_ai_component
 import tilemap_collidable_component
 import orientation_component
+import running_action_component
+import panning_action_component
+import jumping_action_component
 
 
 # SDL
@@ -47,8 +50,14 @@ class EntityManager():
 
         # Velocity
         hero.velocity = velocity_component.VelocityComponent()
-        hero.velocity.xspeed = 48.
 
+        # Running action
+        hero.running_action = running_action_component.RunningActionComponent()
+        hero.running_action.speed = 48
+
+        # Jumping action
+        hero.jumping_action = jumping_action_component.JumpingActionComponent()
+        hero.jumping_action.speed = 128
 
         # Gravity
         hero.gravity = gravity_component.GravityComponent()
@@ -71,7 +80,7 @@ class EntityManager():
         # Tilemap collidable component
         hero.tilemap_collidable = tilemap_collidable_component.TilemapCollidableComponent()
 
-        # orientation
+        # Orientation
         hero.orientation = orientation_component.OrientationComponent()
 
         return hero
@@ -90,8 +99,11 @@ class EntityManager():
         camera.velocity = velocity_component.VelocityComponent()
         camera.velocity.vx = 0
         camera.velocity.vy = 0
-        camera.velocity.xspeed = 256.
-        camera.velocity.yspeed = 256.
+
+        # Panning
+        camera.panning_action = panning_action_component.PanningActionComponent()
+        camera.panning_action.xspeed = 128
+        camera.panning_action.yspeed = 128
 
         # Shape
         camera.shape = shape_component.ShapeComponent()
@@ -101,16 +113,14 @@ class EntityManager():
         # Actions
         camera.actions = actions_component.ActionsComponent()
 
-
-
         # AI
         camera.ai = ai_component.AIComponent()
-        camera.ai.behavior = 'following'
+        camera.ai.behaviors.append('following')
 
         # Following
-        camera.following = following_component.FollowingComponent(self.entitys['hero'])
-        camera.following.xlag = camera.shape.w/4.
-        camera.following.ylag = camera.shape.h/4.
+        camera.following_ai = following_ai_component.FollowingAIComponent(self.entitys['hero'])
+        camera.following_ai.xlag = camera.shape.w/4.
+        camera.following_ai.ylag = camera.shape.h/4.
 
         return camera
 

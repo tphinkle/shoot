@@ -1,4 +1,4 @@
-class FollowingComponent():
+class FollowingAIComponent():
     def __init__(self, target):
         self.target = target
         self.xlag = 0
