@@ -11,16 +11,19 @@ class ActionsProcessSystem():
     '''
 
     def __init__(self):
+        self.action_map = {}
+        self.action_map['RunLeft'] = self.RunLeft
         pass
 
     def ProcessActions(self, world):
         for key, entity in world.entity_manager.entitys.iteritems():
             if entity.actions != None:
                 for action in entity.actions.action_queue:
-                    if action == 'MoveLeft':
+                    '''
+                    if action == 'RunLeft':
                         self.MoveLeft(entity)
 
-                    elif action == 'MoveRight':
+                    elif action == 'RunRight':
                         self.MoveRight(entity)
 
                     elif action == 'MoveUp':
@@ -40,6 +43,9 @@ class ActionsProcessSystem():
 
                     elif action == 'Jump':
                         self.Jump(entity)
+                    '''
+
+                    self.action_map[action](entity)
 
                 self.ClearEntityActions(entity)
 
