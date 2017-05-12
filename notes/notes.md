@@ -15,6 +15,8 @@ An advanced ANCIENT CIVILIZATION develops technology to DARK ENERGY from the DAR
 
 The antagonist is an EX-SOLDIER in the RESISTANCE forces fighting against the EMPIRE, when he discovers the planet hosting the ANCIENT CIVILIZATION. He seeks to acquire their power to take over the universe for himself. He has three MERCENRIES to which he bestows some of the ANCIENT CIVILIZATIONS' ORB powers. These MERCENARIES are out to get the HERO. By defeating the MERCENARIES, the HERO may acquire their POWER ORBS.
 
+The opening sequence of the game shows the UNITED GALAXY'S forces under attack from EX-SOLDIER and the THREE MERCENARIES (which introduces them). They kidnap scientists and retreat.
+
 Our HERO is drawn to the planet after chasing the EX-SOLDIER down for his crimes committed against the RESISTANCE. She crash lands on the planet after engaging with the EX-SOLDIERS forces. On the planet she discovers traces of the ANCIENT CIVILIZATION, as well as a LABORATORY set up by the EX-SOLDIER to perform research on the ANCIENT CIVILIZATION's technology.
 
 ### Characters
@@ -28,7 +30,12 @@ An EX SOLDIER in the RESISTANCE forces that betrayed the group by attacking one 
 
 ##### THREE MERCENARIES
 
+####### TWINS
+Actually two separate people. One female, one male, both androgynous. Both act together essentially as one person. Tricksters. In ultimate battle with HERO, they fuse together into a single entity using the power of the ANCIENT CIVILIZATION's fusion technology. This is one of the final battles and foreshadows the presence of the SINGULARITY and EX-SOLDIERS synthesis.
 
+
+ 
+### Art
 
 
 ### Game play
@@ -44,6 +51,8 @@ Used to launch powerful attacks, or to double jump.
 ##### Teleport orb
 An orb that can be attached to an arm. The orb can be dropped and summoned at will. If the player uses the orb, she will teleport back to its dropped location. This will add unique gameplay elements by allowing for complex puzzle solving, for easier traversal of the entire game world (if the player is smart), and for unique boss battles. The orb can for instance be used to dodge a strong boss attack.
 
+##### On death
+The HERO's body transports to a CHRYSALIS (save point, essentially) where she is fully healed. This technology forms the same basis as the teleport orb. HERO may insert only one orb into one save point, but the orb may be moved to different save points.
 
 # Program specific notes
 

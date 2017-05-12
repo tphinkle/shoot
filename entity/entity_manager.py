@@ -45,22 +45,24 @@ class EntityManager():
 
         # Position
         hero.position = position_component.PositionComponent()
-        hero.position.x = 100
-        hero.position.y = 100
+        hero.position.x = 480
+        hero.position.y = 480
 
         # Velocity
         hero.velocity = velocity_component.VelocityComponent()
 
         # Running action
         hero.running_action = running_action_component.RunningActionComponent()
-        hero.running_action.speed = 48
+        hero.running_action.speed = 128
 
         # Jumping action
         hero.jumping_action = jumping_action_component.JumpingActionComponent()
-        hero.jumping_action.speed = 128
+        hero.jumping_action.speed = 512.
 
         # Gravity
         hero.gravity = gravity_component.GravityComponent()
+        hero.gravity.g = 64
+        hero.gravity.terminal_velocity = 512.
 
         # Acceleration
         hero.acceleration = acceleration_component.AccelerationComponent()
@@ -92,8 +94,8 @@ class EntityManager():
 
         # Position
         camera.position = position_component.PositionComponent()
-        camera.position.x = 0
-        camera.position.y = 0
+        camera.position.x = self.entitys['hero'].position.x
+        camera.position.y = self.entitys['hero'].position.y
 
         # Velocity
         camera.velocity = velocity_component.VelocityComponent()
@@ -102,8 +104,8 @@ class EntityManager():
 
         # Panning
         camera.panning_action = panning_action_component.PanningActionComponent()
-        camera.panning_action.xspeed = 128
-        camera.panning_action.yspeed = 128
+        camera.panning_action.xspeed = 256.
+        camera.panning_action.yspeed = 256.
 
         # Shape
         camera.shape = shape_component.ShapeComponent()

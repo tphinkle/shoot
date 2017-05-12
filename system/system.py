@@ -63,7 +63,7 @@ class System:
 
         # Joystick
         sdl2.SDL_Init(sdl2.SDL_INIT_JOYSTICK)
-        sdl2.SDL_JoystickOpen(0)
+        self.joystick = sdl2.SDL_JoystickOpen(0)
 
         # Event
         self.input = sdl2.SDL_Event()
@@ -74,7 +74,7 @@ class System:
         self.render_period = 1./60
         self.render_timer = timer.Timer(self.render_period)
 
-        self.game_period = 1./100
+        self.game_period = 1./240
         self.game_timer = timer.Timer(self.game_period)
 
 
@@ -105,19 +105,20 @@ class System:
         running = True
         while running:
 
+
             # Poll events
+            inputs = []
             while sdl2.SDL_PollEvent(ctypes.byref(self.input)) != 0:
                 if self.input.type == sdl2.SDL_QUIT:
                     running = False
                     break
 
-                if self.input.type == sdl2.SDL_JOYBUTTONDOWN:
+                else:
                     pass
 
             # Game
             if self.game_timer.Update():
-                self.controller_input_system.HandleInput(self.input, \
-                                                         self.world)
+                self.controller_input_system.HandleInputJoystickStateDriven(self.joystick, self.world)
 
                 self.actions_process_system.ProcessActions(self.world)
                 self.gravity_system.ProcessGravity(self.world)
@@ -125,7 +126,7 @@ class System:
                 self.movement_process_system.ProcessMovement(self.world, self.game_timer.dt)
                 self.ai_system.ProcessAI(self.world)
                 self.tilemap_collision_system.ProcessTilemapCollisions(self.world)
-                #self.gravity_system.CheckGrounded(self.world)
+                self.gravity_system.CheckGrounded(self.world)
 
 
             # Render

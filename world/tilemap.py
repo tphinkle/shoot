@@ -11,7 +11,9 @@ class TileMap():
 
     def Load(self):
         # Raw text
-        text_tiles = np.genfromtxt(self.filepath, delimiter = ',')
+        # Tranpose is necessary for some reason; not quite sure why, but it works.
+        text_tiles = np.genfromtxt(self.filepath, delimiter = ',').T
+
 
         # 2D array of Tile
         self.tiles = np.empty((text_tiles.shape[0], text_tiles.shape[1]), dtype = object)

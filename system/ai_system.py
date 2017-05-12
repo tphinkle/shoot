@@ -22,21 +22,24 @@ class AISystem():
 
     def ProcessAI_Following(self, entity, world):
         target = entity.following_ai.target
+        target_pixel = coord_transforms.GetEntityMiddleCenterPixel(target)
 
 
-        target_center_coords = coord_transforms.GetEntityCenterCoords(target)
 
+        '''
+        Horizontal motion
+        '''
 
         # Target moving right
         if target.velocity.vx > 0:
-            if target_center_coords[0] - entity.position.x > entity.following_ai.xlag:
+            if target_pixel[0] - entity.position.x > entity.following_ai.xlag:
                 entity.actions.action_queue.append('PanRight')
             else:
                 entity.actions.action_queue.append('PanHorizontalStop')
 
         # Target moving left
         elif target.velocity.vx < 0:
-            if entity.position.x + entity.shape.w - target_center_coords[0] > entity.following_ai.xlag:
+            if entity.position.x + entity.shape.w - target_pixel[0] > entity.following_ai.xlag:
                 entity.actions.action_queue.append('PanLeft')
             else:
                 entity.actions.action_queue.append('PanHorizontalStop')
@@ -45,16 +48,20 @@ class AISystem():
         else:
             entity.actions.action_queue.append('PanHorizontalStop')
 
+        '''
+        Vertical motion
+        '''
+
         # Target moving Down
         if target.velocity.vy > 0:
-            if target_center_coords[1] - entity.position.y > entity.following_ai.ylag:
+            if target_pixel[1] - entity.position.y > entity.following_ai.ylag:
                 entity.actions.action_queue.append('PanDown')
             else:
                 entity.actions.action_queue.append('PanVerticalStop')
 
         # Target moving Up
-        elif target.velocity.vx < 0:
-            if entity.position.y + entity.shape.h - target_center_coords[1] > entity.following_ai.ylag:
+        elif target.velocity.vy < 0:
+            if entity.position.y + entity.shape.h - target_pixel[1] > entity.following_ai.ylag:
                 entity.actions.action_queue.append('PanUp')
             else:
                 entity.actions.action_queue.append('PanVerticalStop')

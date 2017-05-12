@@ -16,14 +16,9 @@ class RampTile(Tile):
         self.a = a
         self.b = b
 
-class RoofTile(Tile):
-    def __init__(self):
-        self.type = 'roof'
-        self.a = a
-        self.b = b
 
-class WallTile(Tile):
+class SlantTile(Tile):
     def __init__(self):
-        self.type = 'wall'
+        self.type = 'slant'
         self.a = a
         self.b = b

@@ -29,13 +29,27 @@ class Room():
 class TestRoom(Room):
     def __init__(self):
         self.tilemap = tilemap.TileMap()
-        self.tilemap.filepath = '/home/prestonh/Desktop/Programming/gamedev/shoot/resources/tilemap/test_room.tmp'
+        self.tilemap.filepath = '/home/prestonh/Desktop/Programming/gamedev/shoot/resources/rooms/prototype/prototype_room.tmp'
         self.tilemap.Load()
 
-        self.display = display_component.DisplayComponent(b'/home/prestonh/Desktop/Programming/gamedev/shoot/resources/testroom.bmp')
+        self.display = display_component.DisplayComponent(b'/home/prestonh/Desktop/Programming/gamedev/shoot/resources/rooms/prototype/prototype_room.bmp')
         self.display.source_rect = sdl2.SDL_Rect(0, 0, 640, 480)
         self.display.z = 0
 
         self.shape = shape_component.ShapeComponent()
         self.shape.w = 640
         self.shape.h = 480
+
+class PrototypeRoom(Room):
+    def __init__(self):
+        self.tilemap = tilemap.TileMap()
+        self.tilemap.filepath = '/home/prestonh/Desktop/Programming/gamedev/shoot/resources/rooms/prototype/prototype_room.tmp'
+        self.tilemap.Load()
+
+        self.display = display_component.DisplayComponent(b'/home/prestonh/Desktop/Programming/gamedev/shoot/resources/rooms/prototype/prototype_room.bmp')
+        self.display.source_rect = sdl2.SDL_Rect(0, 0, 1280, 960)
+        self.display.z = 0
+
+        self.shape = shape_component.ShapeComponent()
+        self.shape.w = 1280
+        self.shape.h = 960
