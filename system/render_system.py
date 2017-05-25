@@ -38,7 +38,7 @@ class RenderSystem():
     def RenderEntitys(self, world):
 
         camera = world.entity_manager.entitys['camera']
-        camera_rect = sdl2.SDL_Rect(camera.position.x_int, camera.position.y_int,\
+        camera_rect = sdl2.SDL_Rect(int(camera.position.x), int(camera.position.y),\
          camera.shape.w, camera.shape.h)
         window_rect = self.GetWindowRect()
 
@@ -97,8 +97,8 @@ class RenderSystem():
 
 
         camera = world.entity_manager.entitys['camera']
-        camera_rect = sdl2.SDL_Rect(camera.position.x_int,\
-                                    camera.position.y_int,\
+        camera_rect = sdl2.SDL_Rect(int(camera.position.x),\
+                                    int(camera.position.y),\
                                     camera.shape.w,\
                                     camera.shape.h)
         window_rect = self.GetWindowRect()

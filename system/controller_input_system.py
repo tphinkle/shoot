@@ -19,7 +19,7 @@ class ControllerInputSystem:
                     buttons.append('Null')
 
                 up_down = sdl2.SDL_JoystickGetAxis(joystick, 1)
-
+    
                 # Buttons
                 button_1 = sdl2.SDL_JoystickGetButton(joystick, 1)
                 if button_1 == 1:

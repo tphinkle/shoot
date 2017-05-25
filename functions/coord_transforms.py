@@ -1,14 +1,20 @@
+
+
 def GetEntityAdjLeftX(entity):
     return entity.position.x - 1
 
 def GetEntityLeftX(entity):
     return entity.position.x
 
+def GetEntityCenterX(entity):
+    return entity.position.x + entity.shape.w/2 - 1
+
 def GetEntityRightX(entity):
     return entity.position.x + entity.shape.w - 1
 
 def GetEntityAdjRightX(entity):
     return entity.position.x + entity.shape.w
+
 
 # Above
 def GetEntityAboveAdjLeftPixel(entity):

@@ -11,7 +11,7 @@ import sdl2.sdlimage
 ###########
 
 # World
-sys.path.append('/home/prestonh/Desktop/Programming/gamedev/shoot/world/')
+sys.path.append('/home/prestonh/Desktop/Programming/gamedev/shoot/shoot/world/')
 import world
 
 # Entity
@@ -126,7 +126,8 @@ class System:
                 self.movement_process_system.ProcessMovement(self.world, self.game_timer.dt)
                 self.ai_system.ProcessAI(self.world)
                 self.tilemap_collision_system.ProcessTilemapCollisions(self.world)
-                self.gravity_system.CheckGrounded(self.world)
+                #self.gravity_system.CheckGrounded(self.world)
+                self.movement_process_system.ValidateMovement(self.world)
 
 
             # Render

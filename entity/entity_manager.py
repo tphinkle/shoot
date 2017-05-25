@@ -2,9 +2,9 @@
 import sys
 import ctypes
 
-sys.path.append('/home/prestonh/Desktop/Programming/gamedev/shoot/entity')
-sys.path.append('/home/prestonh/Desktop/Programming/gamedev/shoot/component')
-sys.path.append('/home/prestonh/Desktop/Programming/gamedev/shoot/system')
+sys.path.append('/home/prestonh/Desktop/Programming/gamedev/shoot/shoot/entity')
+sys.path.append('/home/prestonh/Desktop/Programming/gamedev/shoot/shoot/component')
+sys.path.append('/home/prestonh/Desktop/Programming/gamedev/shoot/shoot/system')
 
 
 
@@ -25,6 +25,7 @@ import orientation_component
 import running_action_component
 import panning_action_component
 import jumping_action_component
+import owned_by_component
 
 
 # SDL
@@ -39,14 +40,16 @@ class EntityManager():
         hero = self.CreateEntity('hero')
 
         # Display
-        hero.display = display_component.DisplayComponent(b'/home/prestonh/Desktop/Programming/gamedev/shoot/resources/X.png')
+        hero.display = display_component.DisplayComponent(b'/home/prestonh/Desktop/Programming/gamedev/shoot/shoot/resources/X.png')
         hero.display.source_rect = sdl2.SDL_Rect(213,18,30,34)
         hero.display.z = 1
 
         # Position
         hero.position = position_component.PositionComponent()
-        hero.position.x = 480
-        hero.position.y = 480
+        hero.position.x = 160
+        hero.position.y = 240
+        hero.position.x_proposed = hero.position.x
+        hero.position.y_proposed = hero.position.y
 
         # Velocity
         hero.velocity = velocity_component.VelocityComponent()
@@ -87,6 +90,25 @@ class EntityManager():
 
         return hero
 
+    def CreateBuster(self):
+        buster = self.CreateEntity('buster')
+
+
+
+        # Ownership
+        buster.owned_by = owned_by_component.OwnedByComponent()
+        buster.owned_by.owner = self.entitys['hero']
+
+        # Factory component
+        buster.factory = factory_component.FactoryComponent()
+        buster.factory.spawn_x = 0
+        buster.factory.spawn_y = 0
+        buster.factory.max_out = 5
+        buster.factory.cooldown = 3
+        buster.factory.orders = []
+        buster.factory.specifications = {}
+
+
 
 
     def CreateCamera(self):
@@ -96,6 +118,8 @@ class EntityManager():
         camera.position = position_component.PositionComponent()
         camera.position.x = self.entitys['hero'].position.x
         camera.position.y = self.entitys['hero'].position.y
+        camera.position.x_proposed = camera.position.x
+        camera.position.y_proposed = camera.position.y
 
         # Velocity
         camera.velocity = velocity_component.VelocityComponent()
@@ -105,7 +129,7 @@ class EntityManager():
         # Panning
         camera.panning_action = panning_action_component.PanningActionComponent()
         camera.panning_action.xspeed = 256.
-        camera.panning_action.yspeed = 256.
+        camera.panning_action.yspeed = 640.
 
         # Shape
         camera.shape = shape_component.ShapeComponent()
@@ -121,16 +145,18 @@ class EntityManager():
 
         # Following
         camera.following_ai = following_ai_component.FollowingAIComponent(self.entitys['hero'])
-        camera.following_ai.xlag = camera.shape.w/4.
-        camera.following_ai.ylag = camera.shape.h/4.
+        camera.following_ai.xlag = camera.shape.w/3.
+        camera.following_ai.ylag = camera.shape.h/3.
 
         return camera
 
-    def CreateEntity(self, key):
+    def CreateEntity(self, key, specifications = None):
         new_entity = entity.Entity(key)
         self.entitys[key] = new_entity
 
         return new_entity
+
+
 
     def DeleteEntity(self, key):
         pass

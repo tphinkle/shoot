@@ -1,11 +1,16 @@
 class PositionComponent(object):
     def __init__(self):
-        self._x = 0.
-        self._y = 0.
+        self.x = 0.
+        self.y = 0.
 
-        self.x_int = 0
-        self.y_int = 0
 
+
+        self.x_proposed = 0
+        self.y_proposed = 0
+
+    '''
+    self.x_int = 0
+    self.y_int = 0
     @property
     def x(self):
         return self._x
@@ -23,3 +28,4 @@ class PositionComponent(object):
     def y(self, value):
         self._y = value
         self.y_int = int(self.y)
+    '''

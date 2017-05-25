@@ -16,6 +16,7 @@ class ActionsProcessSystem():
         self.action_map['RunRight'] = self.RunRight
         self.action_map['RunStop'] = self.RunStop
 
+
         # Panning
         self.action_map['PanLeft'] = self.PanLeft
         self.action_map['PanRight'] = self.PanRight
@@ -26,6 +27,9 @@ class ActionsProcessSystem():
 
         # Jumping
         self.action_map['Jump'] = self.Jump
+
+        # Shoot buster
+        self.action_map['ShootBuster'] = self.ShootBuster
 
 
 
@@ -45,6 +49,7 @@ class ActionsProcessSystem():
     Running actions
     '''
 
+
     def RunLeft(self, entity):
         entity.velocity.vx = -1*entity.running_action.speed
 
@@ -55,6 +60,8 @@ class ActionsProcessSystem():
 
     def RunStop(self, entity):
         entity.velocity.vx = 0
+
+
 
     '''
     Panning actions
@@ -85,3 +92,15 @@ class ActionsProcessSystem():
     def Jump(self, entity):
         if entity.gravity.grounded == True:
             entity.velocity.vy = -1*entity.jumping_action.speed
+
+
+    '''
+    Buster actions
+    '''
+
+
+    def ShootBuster(self, entity):
+        pass
+
+    def ChargeBuster(self, entity):
+        pass

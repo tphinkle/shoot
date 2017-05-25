@@ -3,7 +3,7 @@ import sys
 import itertools
 
 # Program specific
-sys.path.append('/home/prestonh/Desktop/Programming/gamedev/shoot/functions')
+sys.path.append('/home/prestonh/Desktop/Programming/gamedev/shoot/shoot/functions')
 import coord_transforms
 
 class AISystem():
