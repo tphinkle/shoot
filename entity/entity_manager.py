@@ -25,7 +25,9 @@ import orientation_component
 import running_action_component
 import panning_action_component
 import jumping_action_component
-import owned_by_component
+import shooting_action_component
+import status_component
+import factory_component
 
 
 # SDL
@@ -62,6 +64,13 @@ class EntityManager():
         hero.jumping_action = jumping_action_component.JumpingActionComponent()
         hero.jumping_action.speed = 512.
 
+        # Shooting action
+        hero.shooting_action = shooting_action_component.ShootingActionComponent()
+        hero.shooting_action.max_bullets = 3
+        hero.shooting_action.cooldown = 2
+        hero.shooting_action.bullet = 'BusterShot'
+        hero.shooting_action.last_shot = 0
+
         # Gravity
         hero.gravity = gravity_component.GravityComponent()
         hero.gravity.g = 64
@@ -69,7 +78,6 @@ class EntityManager():
 
         # Acceleration
         hero.acceleration = acceleration_component.AccelerationComponent()
-
 
         # Shape
         hero.shape = shape_component.ShapeComponent()
@@ -88,26 +96,46 @@ class EntityManager():
         # Orientation
         hero.orientation = orientation_component.OrientationComponent()
 
-        return hero
 
-    def CreateBuster(self):
-        buster = self.CreateEntity('buster')
-
-
-
-        # Ownership
-        buster.owned_by = owned_by_component.OwnedByComponent()
-        buster.owned_by.owner = self.entitys['hero']
+        # Status
+        hero.status = status_component.StatusComponent()
+        hero.status.immunities = []
 
         # Factory component
-        buster.factory = factory_component.FactoryComponent()
-        buster.factory.spawn_x = 0
-        buster.factory.spawn_y = 0
-        buster.factory.max_out = 5
-        buster.factory.cooldown = 3
-        buster.factory.orders = []
-        buster.factory.specifications = {}
+        hero.factory = factory_component.FactoryComponent()
+        hero.factory.orders = []
+        '''
+        First-class function that returns the hero's position; this is the
+        spawn location for the factory.
+        '''
+        def spawn_location():
+            return hero.position.x, hero.position.y
+        hero.factory.spawn_location = spawn_location
 
+
+        return hero
+
+
+
+    def CreateBusterShot(self, customer = None):
+        buster_shot = self.CreateEntity('BusterShot')
+
+        # Position
+        buster_shot.position = position_component.PositionComponent()
+
+        # Velocity
+        buster_shot.velocity = velocity_component.VelocityComponent()
+
+        # Shape
+        buster_shot.shape = shape_component.ShapeComponent()
+        buster_shot.shape.w = 16
+        buster_shot.shape.h = 16
+
+        # Damage component
+        # buster_shot.damage = damage_component.DamageComponent()
+        # buster_shot.damage.damage = 3
+
+        return buster_shot
 
 
 

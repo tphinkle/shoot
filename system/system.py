@@ -24,12 +24,20 @@ import entity_manager
 # System
 import timer as timer
 import render_system
+
+import ground_tile_modifier_system
+
 import controller_input_system
-import actions_process_system
+import ai_system
+import actions_validation_system
+import actions_sorting_system
+import actions_processing_system
+
 import movement_process_system
 import gravity_system
 import acceleration_system
-import ai_system
+
+
 import tilemap_collision_system
 
 
@@ -82,7 +90,15 @@ class System:
         # Systems
         self.render_system = render_system.RenderSystem(self.sdl_renderer, self.window)
         self.controller_input_system = controller_input_system.ControllerInputSystem()
-        self.actions_process_system = actions_process_system.ActionsProcessSystem()
+
+
+
+        self.ground_tile_modifier_system = ground_tile_modifier_systme.GroundTileModifierSystem()
+
+        self.actions_sorting_system = actions_sorting_system.ActionsSortingSystem()
+        self.actions_validation_system = actions_validation_system.ActionsValidationSystem()
+        self.actions_processing_system = actions_processing_system.ActionsProcessingSystem()
+
         self.movement_process_system = movement_process_system.MovementProcessSystem()
         self.gravity_system = gravity_system.GravitySystem()
         self.acceleration_system = acceleration_system.AccelerationSystem()
@@ -118,9 +134,17 @@ class System:
 
             # Game
             if self.game_timer.Update():
-                self.controller_input_system.HandleInputJoystickStateDriven(self.joystick, self.world)
 
-                self.actions_process_system.ProcessActions(self.world)
+
+                self.ground_tile_modifier_system.ProcessGroundTileModifiers(self.world)
+
+                self.controller_input_system.HandleInputJoystickStateDriven(self.joystick, self.world)
+                self.actions_validation_system.ValidateActions(self.world)
+                self.actions_sorting_system.SortActions(self.world)
+                self.actions_processing_system.ProcessActions(self.world)
+
+
+
                 self.gravity_system.ProcessGravity(self.world)
                 self.acceleration_system.ProcessAcceleration(self.world, self.game_timer.dt)
                 self.movement_process_system.ProcessMovement(self.world, self.game_timer.dt)

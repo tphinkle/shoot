@@ -1,6 +1,34 @@
+# SDL related
 import sdl2
 
 class ControllerInputSystem:
+
+    '''
+    * Action processing pipeline:
+        0. Create/Register
+            - e.g., create action from controller input
+            - e.g., create action from AI input
+        1. Validate
+            - Check if action is permissable; if not, filter out
+        2. Sort
+            - Sort actions so they are processed in correct order
+        3. Process
+            - Perform the action
+
+
+    * First step in action processing pipeline (parallel w/ AI)
+
+    * Reads the controller state using sdl2
+
+    * Converts the controllers state into an action, which is mapped via the
+    entity's ControllerInput component
+
+    * Adds the action onto the entity's entity.action.action_queue
+
+    '''
+
+
+
     def __init__(self):
         pass
 
@@ -19,7 +47,7 @@ class ControllerInputSystem:
                     buttons.append('Null')
 
                 up_down = sdl2.SDL_JoystickGetAxis(joystick, 1)
-    
+
                 # Buttons
                 button_1 = sdl2.SDL_JoystickGetButton(joystick, 1)
                 if button_1 == 1:
