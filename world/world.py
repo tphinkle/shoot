@@ -15,7 +15,7 @@ class World():
 
     def LoadGame(self):
 
-        self.room = room.PrototypeRoom()
+        self.room = room.Prototype2Room()
 
         self.entity_manager.CreateHero()
         self.entity_manager.CreateCamera()

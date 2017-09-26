@@ -25,17 +25,19 @@ import entity_manager
 import timer as timer
 import render_system
 
-import ground_tile_modifier_system
+import tile_modifier_system
 
 import controller_input_system
 import ai_system
-import actions_validation_system
-import actions_sorting_system
 import actions_processing_system
 
-import movement_process_system
+
+import kinematics_system
 import gravity_system
-import acceleration_system
+
+
+import status_processing_system
+
 
 
 import tilemap_collision_system
@@ -89,21 +91,26 @@ class System:
     def InitializeSubsystems(self):
         # Systems
         self.render_system = render_system.RenderSystem(self.sdl_renderer, self.window)
+
+
+
+        # Actions systems
         self.controller_input_system = controller_input_system.ControllerInputSystem()
-
-
-
-        self.ground_tile_modifier_system = ground_tile_modifier_systme.GroundTileModifierSystem()
-
-        self.actions_sorting_system = actions_sorting_system.ActionsSortingSystem()
-        self.actions_validation_system = actions_validation_system.ActionsValidationSystem()
         self.actions_processing_system = actions_processing_system.ActionsProcessingSystem()
 
-        self.movement_process_system = movement_process_system.MovementProcessSystem()
+
+
+        self.tile_modifier_system = tile_modifier_system.TileModifierSystem()
+
+        self.kinematics_system = kinematics_system.KinematicsSystem()
+
+
         self.gravity_system = gravity_system.GravitySystem()
-        self.acceleration_system = acceleration_system.AccelerationSystem()
         self.ai_system = ai_system.AISystem()
         self.tilemap_collision_system = tilemap_collision_system.TilemapCollisionSystem()
+
+
+        self.status_processing_system = status_processing_system.StatusProcessingSystem()
 
     def InitializeWorld(self):
         self.world = world.World()
@@ -136,22 +143,24 @@ class System:
             if self.game_timer.Update():
 
 
-                self.ground_tile_modifier_system.ProcessGroundTileModifiers(self.world)
+                self.tile_modifier_system.ProcessTileModifiers(self.world)
 
                 self.controller_input_system.HandleInputJoystickStateDriven(self.joystick, self.world)
-                self.actions_validation_system.ValidateActions(self.world)
-                self.actions_sorting_system.SortActions(self.world)
-                self.actions_processing_system.ProcessActions(self.world)
+                self.actions_processing_system.ProcessActions(self.world, self.game_timer.dt)
 
 
 
                 self.gravity_system.ProcessGravity(self.world)
-                self.acceleration_system.ProcessAcceleration(self.world, self.game_timer.dt)
-                self.movement_process_system.ProcessMovement(self.world, self.game_timer.dt)
+                self.kinematics_system.ProcessAcceleration(self.world, self.game_timer.dt)
+                self.kinematics_system.ProcessMovement(self.world, self.game_timer.dt)
                 self.ai_system.ProcessAI(self.world)
+
                 self.tilemap_collision_system.ProcessTilemapCollisions(self.world)
-                #self.gravity_system.CheckGrounded(self.world)
-                self.movement_process_system.ValidateMovement(self.world)
+
+                self.kinematics_system.ValidateMovement(self.world)
+
+
+                self.status_processing_system.ProcessStatusEffects(self.world)
 
 
             # Render

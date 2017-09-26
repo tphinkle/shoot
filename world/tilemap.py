@@ -68,4 +68,23 @@ class TileMap():
 
                 i += 1
 
-            print header
+
+
+    def Load3(self):
+        tile_labels = np.genfromtxt(self.filepath, dtype =object, delimiter = ',')
+
+        self.h = tile_labels.shape[0]
+        self.w = tile_labels.shape[1]
+        self.tiles = np.empty((self.h, self.w), dtype = object)
+
+        # Set empty tiles
+        self.tiles[tile_labels == 'E'] = tile.EmptyTile()
+
+        # Set solid tiles
+        self.tiles[tile_labels == 'S'] = tile.SolidTile()
+
+        # Set solid ice tiles
+        self.tiles[tile_labels == 'SI'] = tile.SolidTile(special_properties = 'ice')
+
+        # Set solid fire tiles
+        self.tiles[tile_labels == 'SF'] = tile.SolidTile(special_properties = 'fire')

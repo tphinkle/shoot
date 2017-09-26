@@ -14,13 +14,17 @@ class GravitySystem():
     def ProcessGravity(self, world):
         for key, entity in world.entity_manager.entitys.iteritems():
             if entity.gravity != None:
+
+                entity.grounded = tile_functions.CheckEntityGrounded(world, entity)
+
+
                 if entity.gravity.grounded == False:
-                    if entity.velocity.vy < entity.gravity.terminal_velocity:
-                        entity.acceleration.ay = entity.gravity.g
+                    if entity.kinematics.vy < entity.gravity.terminal_velocity:
+                        entity.kinematics.ay = entity.gravity.g
                     else:
-                        entity.acceleration.ay = 0
+                        entity.kinematics.ay = 0
                 else:
-                    entity.acceleration.ay = 0
+                    entity.kinematics.ay = 0
 
 
 
@@ -33,7 +37,7 @@ class GravitySystem():
                 below_left_tile = tile_functions.GetTile(below_left_pixel, world.room.tilemap)
                 below_right_tile = tile_functions.GetTile(below_right_pixel, world.room.tilemap)
 
-                
+
                 if below_left_tile.type == 'solid' or below_right_tile.type == 'solid':
                     entity.gravity.grounded = True
                 else:

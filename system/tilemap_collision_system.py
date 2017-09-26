@@ -35,32 +35,26 @@ class TilemapCollisionSystem():
         tilemap = world.room.tilemap
         for key, entity in world.entity_manager.entitys.iteritems():
             if entity.tilemap_collidable != None:
-                print '\n\n'
-                print 'x,y', entity.position.x, entity.position.y
-                print 'vx, vy', entity.velocity.vx, entity.velocity.vy
-
-
-
 
                 # X
 
-                if entity.velocity.vx < 0:
+                if entity.kinematics.vx < 0:
                     self.HandleLeftCollision(entity, tilemap)
 
 
-                elif entity.velocity.vx > 0:
+                elif entity.kinematics.vx > 0:
                     self.HandleRightCollision(entity, tilemap)
 
                 # Y
 
-                if entity.velocity.vy == 0:
+                if entity.kinematics.vy == 0:
                     self.ResolveRamp(entity, tilemap)
 
-                if entity.velocity.vy > 0:
+                if entity.kinematics.vy > 0:
                     self.HandleBottomCollision(entity, tilemap)
                     self.ResolveRamp(entity, tilemap)
 
-                elif entity.velocity.vy < 0:
+                elif entity.kinematics.vy < 0:
                     self.HandleTopCollision(entity, tilemap)
 #                    self.ResolveRamp(entity, tilemap)
 
@@ -73,8 +67,8 @@ class TilemapCollisionSystem():
 
 
     def HandleLeftCollision(self, entity, tilemap):
-        left_x = entity.position.x
-        left_proposed_x = entity.position.x_proposed
+        left_x = entity.kinematics.x
+        left_proposed_x = entity.kinematics.x_proposed
         top_y = coord_transforms.GetEntityTopY(entity)
         bottom_y = coord_transforms.GetEntityBottomY(entity)
 
@@ -96,13 +90,13 @@ class TilemapCollisionSystem():
 
                     # Tile is obstructing; relocate to proper location
                     else:
-                        entity.position.x_proposed = (column+1)*16
-                        entity.velocity.vx = 0
+                        entity.kinematics.x_proposed = (column+1)*16
+                        entity.kinematics.vx = 0
                         return
 
     def HandleRightCollision(self, entity, tilemap):
-        x_right = entity.position.x + entity.shape.w
-        x_right_proposed = entity.position.x_proposed + entity.shape.w
+        x_right = entity.kinematics.x + entity.shape.w
+        x_right_proposed = entity.kinematics.x_proposed + entity.shape.w
         top_y = coord_transforms.GetEntityTopY(entity)
         bottom_y = coord_transforms.GetEntityBottomY(entity)
 
@@ -124,8 +118,8 @@ class TilemapCollisionSystem():
 
                     # Tile is obstructing; relocate to proper location
                     else:
-                        entity.position.x_proposed = int(16*column - entity.shape.w)
-                        entity.velocity.vx = 0
+                        entity.kinematics.x_proposed = int(16*column - entity.shape.w)
+                        entity.kinematics.vx = 0
                         return
 
 
@@ -140,12 +134,11 @@ class TilemapCollisionSystem():
         tile_y = int(bottom_y - bottom_y%16)
 
 
-        print 'before:', entity.position.y_proposed
 
         # Solid
         if tile.type == 'solid':
-            entity.position.y_proposed = entity.position.y_proposed-(bottom_y%16+1)
-            entity.velocity.vy = 0
+            entity.kinematics.y_proposed = entity.kinematics.y_proposed-(bottom_y%16+1)
+            entity.kinematics.vy = 0
             entity.gravity.grounded = True
 
 
@@ -161,16 +154,14 @@ class TilemapCollisionSystem():
         if tile.type == 'ramp':
             tile_y = bottom_y - (bottom_y%16)
             floor_y = tile.a + (center_x%16)*(tile.b-tile.a)/16.
-            entity.position.y_proposed = entity.position.y_proposed - (bottom_y%16 - floor_y)
-            entity.velocity.vy = 0
+            entity.kinematics.y_proposed = entity.kinematics.y_proposed - (bottom_y%16 - floor_y)
+            entity.kinematics.vy = 0
             entity.gravity.grounded = True
-
-        print 'after:', entity.position.y_proposed
 
 
     def HandleBottomCollision(self, entity, tilemap):
-        y_bottom = entity.position.y + entity.shape.h
-        y_bottom_proposed = entity.position.y_proposed + entity.shape.h
+        y_bottom = entity.kinematics.y + entity.shape.h
+        y_bottom_proposed = entity.kinematics.y_proposed + entity.shape.h
         x_left = coord_transforms.GetEntityLeftX(entity)
         x_right = coord_transforms.GetEntityRightX(entity)
 
@@ -183,30 +174,27 @@ class TilemapCollisionSystem():
             # Loop over columns
             for column in intersecting_columns:
                 if tilemap.tiles[row, column].type == 'solid':
-                    entity.position.y_proposed = int(16*row - entity.shape.h)
-                    entity.velocity.vy = 0
+                    entity.kinematics.y_proposed = int(16*row - entity.shape.h)
+                    entity.kinematics.vy = 0
                     entity.gravity.grounded = True
         pass
 
     def HandleTopCollision(self, entity, tilemap):
-        y_top = entity.position.y
-        y_top_proposed = entity.position.y_proposed
+        y_top = entity.kinematics.y
+        y_top_proposed = entity.kinematics.y_proposed
         x_left = coord_transforms.GetEntityLeftX(entity)
         x_right = coord_transforms.GetEntityRightX(entity)
 
         intersecting_columns = range(int(x_left/16.), int(x_right)/16+1)
         inbetween_rows = range(int(y_top_proposed)/16, int(y_top)/16 + 1)
 
-        print 'entity', entity.position.x, entity.position.y
-        print 'tile', intersecting_columns
-        print 'rows', inbetween_rows
 
         # Loop over rows
         for row in inbetween_rows:
             # Loop over columns
             for column in intersecting_columns:
                 if tilemap.tiles[row, column].type == 'solid':
-                    entity.position.y_proposed = (row + 1)*16
+                    entity.kinematics.y_proposed = (row + 1)*16
         pass
 
 
@@ -222,27 +210,21 @@ class TilemapCollisionSystem():
 
         # Solid
         if tile.type == 'solid':
-            print 'solid'
-            entity.velocity.vy = 0
+            entity.kinematics.vy = 0
             entity.gravity.grounded = True
 
         # Ramp
         elif tile.type == 'ramp':
-            print 'ramp', tile.a, tile.b
             bottom_y = coord_transforms.GetEntityBottomY(entity)
 
             floor_y = tile.a + (center_x%16)*(tile.b-tile.a)/16.+1
 
-            print 'bottom_y', bottom_y%16
-            print 'floor_y', floor_y
 
             if (int(bottom_y%16) == int(floor_y)-1):
-                print 'True'
-                entity.velocity.vy = 0
+                entity.kinematics.vy = 0
                 entity.gravity.grounded = True
 
             else:
-                print 'False'
                 entity.gravity.grounded = False
 
         else:

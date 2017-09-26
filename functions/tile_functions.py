@@ -1,3 +1,5 @@
+import coord_transforms
+
 def GetTileCoords(pixel):
     x_tile = int(pixel[0]/16.)
     y_tile = int(pixel[1]/16.)
@@ -24,3 +26,23 @@ def GetLeftAdjacentTile(pixel, tilemap):
 def GetRightAdjacentTile(pixel, tilemap):
     x_tile, y_tile = GetTileCoords(pixel)
     return tilemap.tiles[x_tile + 1, y_tile]
+
+def GetEntityBelowCenterTile(entity, world):
+    below_center_pixel = coord_transforms.GetEntityBelowCenterPixel(entity)
+    below_center_tile = GetTile(below_center_pixel, world.room.tilemap)
+
+    return below_center_tile
+
+def CheckEntityGrounded(world, entity):
+    below_left_pixel = coord_transforms.GetEntityBelowLeftPixel(entity)
+    below_right_pixel = coord_transforms.GetEntityBelowRightPixel(entity)
+
+    below_left_tile = GetTile(below_left_pixel, world.room.tilemap)
+    below_right_tile = GetTile(below_right_pixel, world.room.tilemap)
+
+
+
+    if below_left_tile.type == 'solid' or below_right_tile.type == 'solid':
+        return True
+    else:
+        return False

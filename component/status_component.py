@@ -3,6 +3,6 @@ class StatusComponent():
         self.stunned = False
         self.rooted = False
         self.poisoned = False
-        self.grounded = False
+        self.frozen = False
 
         self.immunities = []

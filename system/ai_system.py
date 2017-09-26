@@ -25,47 +25,55 @@ class AISystem():
         target_pixel = coord_transforms.GetEntityMiddleCenterPixel(target)
 
 
+        '''
+        Lost entity
+        '''
+
+        if abs(entity.kinematics.x - target.kinematics.x) > 300:
+            entity.kinematics.x_proposed = target.kinematics.x
+
 
         '''
         Horizontal motion
         '''
 
+
         # Target moving right
-        if target.velocity.vx > 0:
-            if target_pixel[0] - entity.position.x > entity.following_ai.xlag:
-                entity.actions.action_queue.append('PanRight')
+        if target.kinematics.vx > 0:
+            if target_pixel[0] - entity.kinematics.x > entity.following_ai.xlag:
+                entity.actions.proposed_actions.append('PanRight')
             else:
-                entity.actions.action_queue.append('PanHorizontalStop')
+                entity.actions.proposed_actions.append('PanHorizontalStop')
 
         # Target moving left
-        elif target.velocity.vx < 0:
-            if entity.position.x + entity.shape.w - target_pixel[0] > entity.following_ai.xlag:
-                entity.actions.action_queue.append('PanLeft')
+        elif target.kinematics.vx < 0:
+            if entity.kinematics.x + entity.shape.w - target_pixel[0] > entity.following_ai.xlag:
+                entity.actions.proposed_actions.append('PanLeft')
             else:
-                entity.actions.action_queue.append('PanHorizontalStop')
+                entity.actions.proposed_actions.append('PanHorizontalStop')
 
         # Target stationary (horizontal)
         else:
-            entity.actions.action_queue.append('PanHorizontalStop')
+            entity.actions.proposed_actions.append('PanHorizontalStop')
 
         '''
         Vertical motion
         '''
 
         # Target moving Down
-        if target.velocity.vy > 0:
-            if target_pixel[1] - entity.position.y > entity.following_ai.ylag:
-                entity.actions.action_queue.append('PanDown')
+        if target.kinematics.vy > 0:
+            if target_pixel[1] - entity.kinematics.y > entity.following_ai.ylag:
+                entity.actions.proposed_actions.append('PanDown')
             else:
-                entity.actions.action_queue.append('PanVerticalStop')
+                entity.actions.proposed_actions.append('PanVerticalStop')
 
         # Target moving Up
-        elif target.velocity.vy < 0:
-            if entity.position.y + entity.shape.h - target_pixel[1] > entity.following_ai.ylag:
-                entity.actions.action_queue.append('PanUp')
+        elif target.kinematics.vy < 0:
+            if entity.kinematics.y + entity.shape.h - target_pixel[1] > entity.following_ai.ylag:
+                entity.actions.proposed_actions.append('PanUp')
             else:
-                entity.actions.action_queue.append('PanVerticalStop')
+                entity.actions.proposed_actions.append('PanVerticalStop')
 
         # Target stationary (vertical)
         else:
-            entity.actions.action_queue.append('PanVerticalStop')
+            entity.actions.proposed_actions.append('PanVerticalStop')

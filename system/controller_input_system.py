@@ -43,8 +43,8 @@ class ControllerInputSystem:
                     buttons.append('Left')
                 elif left_right > 0:
                     buttons.append('Right')
-                elif left_right == 0:
-                    buttons.append('Null')
+                #elif left_right == 0:
+                    #buttons.append('Null')
 
                 up_down = sdl2.SDL_JoystickGetAxis(joystick, 1)
 
@@ -53,9 +53,13 @@ class ControllerInputSystem:
                 if button_1 == 1:
                     buttons.append('B')
 
+                button_0 = sdl2.SDL_JoystickGetButton(joystick, 0)
+                if button_0 == 1:
+                    buttons.append('A')
+
                 for button in buttons:
                     action = entity.controller_input.action_mapping[button]
-                    entity.actions.action_queue.append(action)
+                    entity.actions.proposed_actions.append(action)
 
 
 
@@ -83,8 +87,10 @@ class ControllerInputSystem:
                             buttons.append('Left')
                         elif input.jaxis.value > 0:
                             buttons.append('Right')
-                        elif input.jaxis.value == 0:
-                            buttons.append('Null')
+
+                        # Old function when not pressing left or right was a command
+                        #elif input.jaxis.value == 0:
+                            #buttons.append('Null')
 
                     if input.jaxis.axis == 1:
                         if input.jaxis.value < 0:
@@ -107,8 +113,8 @@ class ControllerInputSystem:
                     if input.key.keysym.scancode == 82:
                         buttons.append('B')
 
-                elif (input.type == sdl2.SDL_KEYUP):
-                    buttons.append('Null')
+                #elif (input.type == sdl2.SDL_KEYUP):
+                    #buttons.append('Null')
 
 
 

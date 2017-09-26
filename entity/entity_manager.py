@@ -11,10 +11,11 @@ sys.path.append('/home/prestonh/Desktop/Programming/gamedev/shoot/shoot/system')
 # Game
 import entity
 import display_component
-import position_component
-import velocity_component
 import gravity_component
-import acceleration_component
+
+
+import kinematics_component
+
 import shape_component
 import actions_component
 import controller_input_component
@@ -22,9 +23,10 @@ import ai_component
 import following_ai_component
 import tilemap_collidable_component
 import orientation_component
-import running_action_component
+import running_floating_action_component
 import panning_action_component
 import jumping_action_component
+import dashing_action_component
 import shooting_action_component
 import status_component
 import factory_component
@@ -46,23 +48,30 @@ class EntityManager():
         hero.display.source_rect = sdl2.SDL_Rect(213,18,30,34)
         hero.display.z = 1
 
-        # Position
-        hero.position = position_component.PositionComponent()
-        hero.position.x = 160
-        hero.position.y = 240
-        hero.position.x_proposed = hero.position.x
-        hero.position.y_proposed = hero.position.y
+        # Kinematics
+        hero.kinematics = kinematics_component.KinematicsComponent()
+        hero.kinematics.x = 800
+        hero.kinematics.y = 800
+        hero.kinematics.x_proposed = hero.kinematics.x
+        hero.kinematics.y_proposed = hero.kinematics.y
 
-        # Velocity
-        hero.velocity = velocity_component.VelocityComponent()
+        # Actions component
+        hero.actions = actions_component.ActionsComponent()
 
         # Running action
-        hero.running_action = running_action_component.RunningActionComponent()
-        hero.running_action.speed = 128
+        hero.running_floating_action = running_floating_action_component.RunningFloatingActionComponent()
+        hero.running_floating_action.running_base_speed = 128
+        hero.running_floating_action.floating_base_speed = 128
 
         # Jumping action
         hero.jumping_action = jumping_action_component.JumpingActionComponent()
-        hero.jumping_action.speed = 512.
+        hero.jumping_action.base_speed = 1024.
+
+        # Dashing action
+        hero.dashing_action = dashing_action_component.DashingActionComponent()
+        hero.dashing_action.base_speed = 256
+
+
 
         # Shooting action
         hero.shooting_action = shooting_action_component.ShootingActionComponent()
@@ -73,19 +82,16 @@ class EntityManager():
 
         # Gravity
         hero.gravity = gravity_component.GravityComponent()
-        hero.gravity.g = 64
+        hero.gravity.g = 32.
         hero.gravity.terminal_velocity = 512.
 
-        # Acceleration
-        hero.acceleration = acceleration_component.AccelerationComponent()
 
         # Shape
         hero.shape = shape_component.ShapeComponent()
         hero.shape.w = 16
         hero.shape.h = 32
 
-        # Actions component
-        hero.actions = actions_component.ActionsComponent()
+
 
         # Controller input component
         hero.controller_input = controller_input_component.ControllerInputComponent()
@@ -104,6 +110,7 @@ class EntityManager():
         # Factory component
         hero.factory = factory_component.FactoryComponent()
         hero.factory.orders = []
+
         '''
         First-class function that returns the hero's position; this is the
         spawn location for the factory.
@@ -120,11 +127,9 @@ class EntityManager():
     def CreateBusterShot(self, customer = None):
         buster_shot = self.CreateEntity('BusterShot')
 
-        # Position
-        buster_shot.position = position_component.PositionComponent()
+        # Kinematics
+        buster_shot.kinematics = kinematics_component.KinematicsComponent()
 
-        # Velocity
-        buster_shot.velocity = velocity_component.VelocityComponent()
 
         # Shape
         buster_shot.shape = shape_component.ShapeComponent()
@@ -143,16 +148,13 @@ class EntityManager():
         camera = self.CreateEntity('camera')
 
         # Position
-        camera.position = position_component.PositionComponent()
-        camera.position.x = self.entitys['hero'].position.x
-        camera.position.y = self.entitys['hero'].position.y
-        camera.position.x_proposed = camera.position.x
-        camera.position.y_proposed = camera.position.y
+        camera.kinematics = kinematics_component.KinematicsComponent()
+        camera.kinematics.x = self.entitys['hero'].kinematics.x
+        camera.kinematics.y = self.entitys['hero'].kinematics.y
 
-        # Velocity
-        camera.velocity = velocity_component.VelocityComponent()
-        camera.velocity.vx = 0
-        camera.velocity.vy = 0
+        camera.kinematics.x_proposed = camera.kinematics.x
+        camera.kinematics.y_proposed = camera.kinematics.y
+
 
         # Panning
         camera.panning_action = panning_action_component.PanningActionComponent()
@@ -175,6 +177,7 @@ class EntityManager():
         camera.following_ai = following_ai_component.FollowingAIComponent(self.entitys['hero'])
         camera.following_ai.xlag = camera.shape.w/3.
         camera.following_ai.ylag = camera.shape.h/3.
+
 
         return camera
 
