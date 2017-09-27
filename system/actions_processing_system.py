@@ -92,7 +92,7 @@ class ActionsProcessingSystem():
 
 
     def ProcessMoveLeft(self, entity, dt):
-        entity.running_floating_action.active = True
+        entity.running_floating_action.status = 'triggered'
         entity.running_floating_action.direction = 'left'
 
 
@@ -100,7 +100,7 @@ class ActionsProcessingSystem():
 
 
     def ProcessMoveRight(self, entity, dt):
-        entity.running_floating_action.active = True
+        entity.running_floating_action.status = 'triggered'
         entity.running_floating_action.direction = 'right'
 
     def ProcessDash(self, entity, dt):

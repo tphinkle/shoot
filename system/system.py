@@ -5,6 +5,7 @@ import ctypes
 # SDL
 import sdl2
 import sdl2.sdlimage
+import sdl2.sdlttf
 
 ###########
 # Game
@@ -46,6 +47,7 @@ import tilemap_collision_system
 
 class System:
     def __init__(self):
+
         self.InitializeSDL()
         self.InitializeTimers()
         self.InitializeSubsystems()
@@ -54,6 +56,9 @@ class System:
 
     def InitializeSDL(self):
         # SDL sub systems
+
+        # TTF
+        sdl2.sdlttf.TTF_Init()
 
         # Video
         sdl2.SDL_Init(sdl2.SDL_INIT_VIDEO)
@@ -114,7 +119,10 @@ class System:
 
     def InitializeWorld(self):
         self.world = world.World()
-        # Entities
+
+
+
+
 
     def LoadGame(self):
         self.world.LoadGame()

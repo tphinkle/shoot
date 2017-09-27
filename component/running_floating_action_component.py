@@ -3,7 +3,8 @@ class RunningFloatingActionComponent():
         self.running_base_speed = None
         self.floating_base_speed = None
         self.speed_augmentations = 0
-        self.active = False
+        self.status = 'inactive'
+        self.mode = None
         self.direction = None
 
 

@@ -82,7 +82,7 @@ class EntityManager():
 
         # Gravity
         hero.gravity = gravity_component.GravityComponent()
-        hero.gravity.g = 32.
+        hero.gravity.g = 64.
         hero.gravity.terminal_velocity = 512.
 
 
@@ -158,7 +158,7 @@ class EntityManager():
 
         # Panning
         camera.panning_action = panning_action_component.PanningActionComponent()
-        camera.panning_action.xspeed = 256.
+        camera.panning_action.xspeed = 128.
         camera.panning_action.yspeed = 640.
 
         # Shape

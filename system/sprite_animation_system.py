@@ -17,4 +17,8 @@ class SpriteAnimationSystem():
 
 
     def UpdateHeroSprite(self, hero):
-        if hero.actions.action_queue
+        # Running
+
+        # Floating
+
+        # Dashing

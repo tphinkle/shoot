@@ -7,14 +7,24 @@ class DashingActionProcessingSystem(object):
     def ProcessDashing(self, world, dt):
         for key, entity in world.entity_manager.entitys.iteritems():
             if entity.dashing_action:
+
+
+
                 if entity.dashing_action.status == 'triggered':
                     if self.CheckDashValid(entity):
                         entity.dashing_action.status = 'active'
                         self.Dash(entity, dt)
 
+                    else:
+                        entity.dashing_action.status = 'inactive'
+
 
                 elif entity.dashing_action.status == 'active':
-                    self.Dash(entity, dt)
+                    if not self.CheckDashValid(entity):
+                        entity.dashing_action.status = 'inactive'
+
+                    else:
+                        self.Dash(entity, dt)
 
 
     def CheckDashValid(self, entity):
@@ -28,13 +38,15 @@ class DashingActionProcessingSystem(object):
     def Dash(self, entity, dt):
         entity.dashing_action.timer += dt
 
-        print dt
-
         if entity.dashing_action.timer >= entity.dashing_action.duration:
             self.StopDash(entity)
 
         else:
-            entity.kinematics.vx = entity.dashing_action.speed()
+            if entity.orientation.facing == 'left':
+                entity.kinematics.vx = -entity.dashing_action.speed()
+            elif entity.orientation.facing == 'right':
+                entity.kinematics.vx = entity.dashing_action.speed()
+
 
 
 

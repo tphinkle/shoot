@@ -1,9 +1,13 @@
 # Python standard library
 import ctypes
+import os
 
 # SDL
 import sdl2
 import sdl2.sdlimage
+
+#os.environ['PYSDL2_DLL_PATH'] = ''
+import sdl2.sdlttf
 
 
 class RenderSystem():
@@ -19,6 +23,7 @@ class RenderSystem():
 
 
     def LoadTexture(self, filepath):
+
         surface = sdl2.sdlimage.IMG_Load(filepath)
         texture = sdl2.SDL_CreateTextureFromSurface(self.sdl_renderer, surface)
         sdl2.SDL_FreeSurface(surface)
@@ -29,11 +34,76 @@ class RenderSystem():
 
 
         self.RenderRoom(world)
+
+        self.RenderDebug(world)
+
         self.RenderEntitys(world)
 
 
         sdl2.SDL_RenderPresent(self.sdl_renderer);
 
+
+
+
+    def RenderDebug(self, world):
+        '''
+        This probably doesn't belong here... Should move into a subsystem elsewhere.
+        This is an easy light way of having a quick debugger that can print the hero's
+        stats.
+        Move this elsewhere later on.
+        Tutorial: https://egdev.wordpress.com/2014/03/14/python-sdl2-ttf-test/
+        '''
+
+        # Open font
+        font = sdl2.sdlttf.TTF_OpenFont('/home/prestonh/Desktop/Programming/gamedev/shoot/shoot/resources/fonts/computer_modern/cmunsx.ttf', 12)
+        color = sdl2.SDL_Color(40,255,40)
+
+
+
+        # Create debug text
+        entity = world.entity_manager.entitys['hero']
+        debug_lines = []
+        debug_lines.append('(x,y):' + str(round(entity.kinematics.x,3)) +',  ' + str(round(entity.kinematics.y, 3)))
+        debug_lines.append('(vx,vy):' + str(round(entity.kinematics.vx,3)) +',  ' + str(round(entity.kinematics.vy, 3)))
+
+        debug_text = ''
+        for debug_line in debug_lines:
+            debug_text += debug_line + '\n'
+
+
+
+
+        # Render the debug text
+
+        # Create surface and texture
+        debug_width = 200
+        text_surface = sdl2.sdlttf.TTF_RenderText_Blended_Wrapped(font, debug_text, color, debug_width)
+        text_texture = sdl2.SDL_CreateTextureFromSurface(self.sdl_renderer, text_surface)
+
+        # Render surface and texture
+        window_rect = self.GetWindowRect()
+        w = ctypes.pointer(ctypes.c_int(0))
+        h = ctypes.pointer(ctypes.c_int(0))
+        sdl2.SDL_QueryTexture(text_texture, None, None, w, h)
+        x = window_rect.w - debug_width
+        y = 50#window_rect.h - h.contents.value
+        debug_rect = sdl2.SDL_Rect(x, y, w.contents.value, h.contents.value)
+
+        sdl2.SDL_RenderCopy(self.sdl_renderer,
+                              text_texture,
+                              None,
+                              debug_rect)
+
+
+
+        # Free resources
+        sdl2.SDL_FreeSurface(text_surface)
+        sdl2.sdlttf.TTF_CloseFont(font)
+
+
+
+
+        pass
 
     def RenderEntitys(self, world):
 

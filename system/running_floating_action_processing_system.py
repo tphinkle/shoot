@@ -1,7 +1,7 @@
 class RunningFloatingActionProcessingSystem():
 
     def __init__(self):
-
+        
         pass
 
 
@@ -10,7 +10,7 @@ class RunningFloatingActionProcessingSystem():
             if entity.running_floating_action:
 
                 # Process action
-                if entity.running_floating_action.active:
+                if entity.running_floating_action.status == 'triggered':
 
                     # Check run or float
                     if entity.gravity.grounded:
@@ -24,12 +24,12 @@ class RunningFloatingActionProcessingSystem():
 
 
                     # Set inactive
-                    entity.running_floating_action.active = False
+                    entity.running_floating_action.status = 'inactive'
 
 
 
 
-                elif entity.running_floating_action.active == False:
+                elif entity.running_floating_action.status == 'inactive':
 
                     entity.kinematics.vx = 0
 
@@ -40,6 +40,8 @@ class RunningFloatingActionProcessingSystem():
     '''
 
     def ProcessRunning(self, entity, world):
+        self.mode = 'running'
+
         # Run left
         if entity.running_floating_action.direction == 'left':
             self.ProcessRunningLeft(entity, world)
@@ -67,6 +69,8 @@ class RunningFloatingActionProcessingSystem():
     '''
 
     def ProcessFloating(self, entity, world):
+        self.mode = 'floating'
+
         # Float left
         if entity.running_floating_action.direction == 'left':
             self.ProcessFloatingLeft(entity, world)
@@ -76,11 +80,12 @@ class RunningFloatingActionProcessingSystem():
             self.ProcessFloatingRight(entity, world)
 
     def ProcessFloatingLeft(self, entity, world):
-        entity.kinematics.vx = -entity.running_floating_action.floating_speed()
+        #entity.kinematics.vx = -entity.running_floating_action.floating_speed()
+
         if entity.orientation:
             entity.orientation.facing = 'left'
 
     def ProcessFloatingRight(self, entity, world):
-        entity.kinematics.vx = entity.running_floating_action.floating_speed()
+#        entity.kinematics.vx = entity.running_floating_action.floating_speed()
         if entity.orientation:
             entity.orientation.facing = 'right'
