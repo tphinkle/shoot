@@ -25,55 +25,59 @@ class AISystem():
         target_pixel = coord_transforms.GetEntityMiddleCenterPixel(target)
 
 
-        '''
-        Lost entity
-        '''
+
+        # DEBUG: Always focus target exactly
+        debug = True
+        if debug:
+            target_x = target.kinematics.x
+            target_y = target.kinematics.y
+
+            entity.kinematics.x = target_x - entity.shape.w/2.
+            entity.kinematics.y = target_y - entity.shape.h/2.
+            return
+
+
 
         if abs(entity.kinematics.x - target.kinematics.x) > 300:
             entity.kinematics.x_proposed = target.kinematics.x
 
 
-        '''
-        Horizontal motion
-        '''
+        args = []
 
-
+        pan = False
         # Target moving right
         if target.kinematics.vx > 0:
             if target_pixel[0] - entity.kinematics.x > entity.following_ai.xlag:
-                entity.actions.proposed_actions.append('PanRight')
-            else:
-                entity.actions.proposed_actions.append('PanHorizontalStop')
+                pan = True
+                args.append('right')
 
         # Target moving left
         elif target.kinematics.vx < 0:
             if entity.kinematics.x + entity.shape.w - target_pixel[0] > entity.following_ai.xlag:
-                entity.actions.proposed_actions.append('PanLeft')
-            else:
-                entity.actions.proposed_actions.append('PanHorizontalStop')
+                pan = True
+                args.append('left')
 
-        # Target stationary (horizontal)
-        else:
-            entity.actions.proposed_actions.append('PanHorizontalStop')
-
-        '''
-        Vertical motion
-        '''
 
         # Target moving Down
         if target.kinematics.vy > 0:
             if target_pixel[1] - entity.kinematics.y > entity.following_ai.ylag:
-                entity.actions.proposed_actions.append('PanDown')
-            else:
-                entity.actions.proposed_actions.append('PanVerticalStop')
+                pan = True
+                args.append('down')
+
 
         # Target moving Up
         elif target.kinematics.vy < 0:
             if entity.kinematics.y + entity.shape.h - target_pixel[1] > entity.following_ai.ylag:
-                entity.actions.proposed_actions.append('PanUp')
-            else:
-                entity.actions.proposed_actions.append('PanVerticalStop')
+                pan = True
+                args.append('up')
 
-        # Target stationary (vertical)
-        else:
-            entity.actions.proposed_actions.append('PanVerticalStop')
+
+        # Set 'Start' 'Stop' status
+        if pan == True:
+            args = ['start'] + args
+        elif pan == False:
+            args = ['stop'] + args
+
+
+
+        entity.actions.proposed_actions.append(['pan', args])

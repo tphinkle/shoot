@@ -25,6 +25,7 @@ import entity_manager
 # System
 import timer as timer
 import render_system
+import sprite_animation_system
 
 import tile_modifier_system
 
@@ -96,11 +97,11 @@ class System:
     def InitializeSubsystems(self):
         # Systems
         self.render_system = render_system.RenderSystem(self.sdl_renderer, self.window)
-
+        self.sprite_animation_system = sprite_animation_system.SpriteAnimationSystem()
 
 
         # Actions systems
-        self.controller_input_system = controller_input_system.ControllerInputSystem()
+        self.controller_input_system = controller_input_system.ControllerInputSystem(self.joystick)
         self.actions_processing_system = actions_processing_system.ActionsProcessingSystem()
 
 
@@ -128,51 +129,62 @@ class System:
         self.world.LoadGame()
 
 
+    def GetInputs(self):
+        # Poll events
+        inputs = []
+        while sdl2.SDL_PollEvent(ctypes.byref(self.input)) != 0:
+            inputs.append(self.input)
+            if self.input.type == sdl2.SDL_QUIT:
+                self.running = False
+                break
+
+            else:
+                pass
+
+        return inputs
 
 
     def Run(self):
         # Begin main loop
         self.LoadGame()
-        running = True
-        while running:
-
-
-            # Poll events
-            inputs = []
-            while sdl2.SDL_PollEvent(ctypes.byref(self.input)) != 0:
-                if self.input.type == sdl2.SDL_QUIT:
-                    running = False
-                    break
-
-                else:
-                    pass
+        self.running = True
+        while self.running:
 
             # Game
             if self.game_timer.Update():
 
 
+                inputs = self.GetInputs()
+                self.controller_input_system.HandleInputEventDriven(self.joystick, inputs, self.world)
+                self.ai_system.ProcessAI(self.world)
+
+
+
                 self.tile_modifier_system.ProcessTileModifiers(self.world)
 
-                self.controller_input_system.HandleInputJoystickStateDriven(self.joystick, self.world)
                 self.actions_processing_system.ProcessActions(self.world, self.game_timer.dt)
 
 
 
                 self.gravity_system.ProcessGravity(self.world)
-                self.kinematics_system.ProcessAcceleration(self.world, self.game_timer.dt)
-                self.kinematics_system.ProcessMovement(self.world, self.game_timer.dt)
-                self.ai_system.ProcessAI(self.world)
-
+                self.kinematics_system.UpdateKinematics(self.world, self.game_timer.dt)
                 self.tilemap_collision_system.ProcessTilemapCollisions(self.world)
 
-                self.kinematics_system.ValidateMovement(self.world)
+
+
+
+
+                self.kinematics_system.ValidatePosition(self.world)
 
 
                 self.status_processing_system.ProcessStatusEffects(self.world)
 
 
+
+
             # Render
             if self.render_timer.Update():
+                self.sprite_animation_system.UpdateEntitySprites(self.world, self.render_timer.dt)
                 self.render_system.RenderAll(self.world)
 
 

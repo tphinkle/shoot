@@ -1,37 +1,69 @@
+#Python standard library
+import sys
+
+# Game specific
+sys.path.append('../functions/')
+import constants
+
 class RunningFloatingActionProcessingSystem():
 
     def __init__(self):
-        
+
         pass
 
 
-    def ProcessRunningFloating(self, world):
+
+
+    def Trigger(self, entity, args):
+        if 'start' in args:
+            self.StartAction(entity, args)
+        elif 'stop' in args:
+            self.StopAction(entity, args)
+
+    def StartAction(self, entity, args):
+        entity.running_floating_action.status = 'active'
+
+        if 'left' in args:
+            entity.running_floating_action.direction = 'left'
+
+        elif 'right' in args:
+            entity.running_floating_action.direction = 'right'
+
+    def StopAction(self, entity, args = None):
+        entity.running_floating_action.status = 'inactive'
+
+        if entity.running_floating_action.direction == 'left':
+            entity.kinematics.sources['running_floating'].ax = constants.infinity
+
+        elif entity.running_floating_action.direction == 'right':
+            entity.kinematics.sources['running_floating'].ax = -constants.infinity
+
+        entity.kinematics.sources['running_floating'].target_vx = 0
+
+
+
+    def ProcessAction(self, world, dt):
         for key, entity in world.entity_manager.entitys.iteritems():
             if entity.running_floating_action:
 
-                # Process action
-                if entity.running_floating_action.status == 'triggered':
+                # Active
+                if entity.running_floating_action.status == 'active':
 
-                    # Check run or float
-                    if entity.gravity.grounded:
-                        self.ProcessRunning(entity, world)
+                        # Check run or float
+                        if entity.gravity.grounded:
+                            self.mode = 'running'
+                            self.Run(entity)
 
-                    elif not entity.gravity.grounded:
-                        self.ProcessFloating(entity, world)
+                        elif not entity.gravity.grounded:
+                            self.mode = 'floating'
+                            self.Float(entity)
 
-
-
-
-
-                    # Set inactive
-                    entity.running_floating_action.status = 'inactive'
-
-
-
-
+                # Inactive
                 elif entity.running_floating_action.status == 'inactive':
 
-                    entity.kinematics.vx = 0
+                    pass
+
+
 
 
 
@@ -39,53 +71,57 @@ class RunningFloatingActionProcessingSystem():
     Running functions
     '''
 
-    def ProcessRunning(self, entity, world):
-        self.mode = 'running'
+    def Run(self, entity):
 
-        # Run left
+        # Get correct acceleration
+        entity.running_floating_action.acceleration = constants.infinity
+
+        # Set target velocity:
         if entity.running_floating_action.direction == 'left':
-            self.ProcessRunningLeft(entity, world)
+
+            if entity.orientation:
+                entity.orientation.facing = 'left'
+
+            entity.kinematics.sources['running_floating'].ax = -entity.running_floating_action.acceleration
+            entity.kinematics.sources['running_floating'].target_vx = -entity.running_floating_action.running_speed()
 
         # Run right
         elif entity.running_floating_action.direction == 'right':
-            self.ProcessRunningRight(entity, world)
 
+            if entity.orientation:
+                entity.orientation.facing = 'right'
 
-    def ProcessRunningLeft(self, entity, world):
-        entity.kinematics.vx = -entity.running_floating_action.running_speed()
-        if entity.orientation:
-            entity.orientation.facing = 'left'
-
-
-
-    def ProcessRunningRight(self, entity, world):
-        entity.kinematics.vx = entity.running_floating_action.running_speed()
-        if entity.orientation:
-            entity.orientation.facing = 'right'
+            entity.kinematics.sources['running_floating'].ax = entity.running_floating_action.acceleration
+            entity.kinematics.sources['running_floating'].target_vx = entity.running_floating_action.running_speed()
 
 
     '''
     Floating functions
     '''
 
-    def ProcessFloating(self, entity, world):
-        self.mode = 'floating'
+    def Float(self, entity):
+
+        entity.running_floating_action.acceleration = constants.infinity
 
         # Float left
         if entity.running_floating_action.direction == 'left':
-            self.ProcessFloatingLeft(entity, world)
+
+            if entity.orientation:
+                entity.orientation.facing = 'left'
+
+            entity.kinematics.sources['running_floating'].ax = -entity.running_floating_action.acceleration
+            entity.kinematics.sources['running_floating'].target_vx = -entity.running_floating_action.running_speed()
+
+
+
+
+
 
         # Float right
         if entity.running_floating_action.direction == 'right':
-            self.ProcessFloatingRight(entity, world)
 
-    def ProcessFloatingLeft(self, entity, world):
-        #entity.kinematics.vx = -entity.running_floating_action.floating_speed()
+            if entity.orientation:
+                entity.orientation.facing = 'right'
 
-        if entity.orientation:
-            entity.orientation.facing = 'left'
-
-    def ProcessFloatingRight(self, entity, world):
-#        entity.kinematics.vx = entity.running_floating_action.floating_speed()
-        if entity.orientation:
-            entity.orientation.facing = 'right'
+            entity.kinematics.sources['running_floating'].ax = entity.running_floating_action.acceleration
+            entity.kinematics.sources['running_floating'].target_vx = entity.running_floating_action.running_speed()

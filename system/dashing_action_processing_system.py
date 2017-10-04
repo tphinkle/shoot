@@ -4,27 +4,64 @@ class DashingActionProcessingSystem(object):
         pass
 
 
-    def ProcessDashing(self, world, dt):
+
+    def Trigger(self, entity, args):
+        if 'start' in args:
+            self.StartAction(entity, args)
+        elif 'stop' in args:
+            self.StopAction(entity, args)
+
+    def StartAction(self, entity, args):
+        entity.dashing_action.status = 'active'
+        entity.kinematics.sources['dashing'].ax = 9999
+        if entity.orientation.facing == 'left':
+            entity.kinematics.sources['dashing'].target_vx = -entity.dashing_action.speed()
+        elif entity.orientation.facing == 'right':
+            entity.kinematics.sources['dashing'].target_vx = entity.dashing_action.speed()
+
+
+    def StopAction(self, entity, args):
+        entity.dashing_action.status = 'inactive'
+        entity.dashing_action.timer = 0
+        entity.kinematics.sources['dashing'].ax = 0
+
+
+
+
+
+    def ProcessAction(self, world, dt):
         for key, entity in world.entity_manager.entitys.iteritems():
             if entity.dashing_action:
 
 
 
-                if entity.dashing_action.status == 'triggered':
+                # Active
+                if entity.dashing_action.status == 'active':
+
+                    # Check timer
+                    if entity.dashing_action.timer >= entity.dashing_action.period:
+                        self.StopAction()
+                        return
+
+
+                    # Complete the action
                     if self.CheckDashValid(entity):
-                        entity.dashing_action.status = 'active'
-                        self.Dash(entity, dt)
+                        self.UpdateTimer(entity, dt)
+                        pass
 
+                    # Action invalid; stop
                     else:
-                        entity.dashing_action.status = 'inactive'
+                        self.StopAction()
 
 
-                elif entity.dashing_action.status == 'active':
-                    if not self.CheckDashValid(entity):
-                        entity.dashing_action.status = 'inactive'
 
-                    else:
-                        self.Dash(entity, dt)
+                # Inactive
+                elif entity.dashing_action.status == 'inactive':
+                    pass
+
+
+
+
 
 
     def CheckDashValid(self, entity):
@@ -35,21 +72,10 @@ class DashingActionProcessingSystem(object):
             return False
 
 
-    def Dash(self, entity, dt):
-        entity.dashing_action.timer += dt
-
-        if entity.dashing_action.timer >= entity.dashing_action.duration:
-            self.StopDash(entity)
-
-        else:
-            if entity.orientation.facing == 'left':
-                entity.kinematics.vx = -entity.dashing_action.speed()
-            elif entity.orientation.facing == 'right':
-                entity.kinematics.vx = entity.dashing_action.speed()
-
-
-
-
     def StopDash(self, entity):
         entity.dashing_action.timer = 0.
         entity.dashing_action.status = 'inactive'
+
+
+    def UpdateTimer(self, entity, dt):
+        entity.dashing_action.timer += dt

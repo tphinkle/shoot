@@ -3,6 +3,7 @@ class Entity():
         # Initialize all components None
         self.key = key
         self.display = None
+        self.sprite_animation = None
         self.kinematics = None
         self.gravity = None
         self.tilemap_collidable = None
@@ -18,3 +19,4 @@ class Entity():
         self.running_floating_action = None
         self.jumping_action = None
         self.dashing_action = None
+        self.panning_action = None

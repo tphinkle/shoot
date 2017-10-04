@@ -18,27 +18,19 @@ class GravitySystem():
                 entity.grounded = tile_functions.CheckEntityGrounded(world, entity)
 
 
+                # Falling
                 if entity.gravity.grounded == False:
+
+                    # Accelerating
                     if entity.kinematics.vy < entity.gravity.terminal_velocity:
-                        entity.kinematics.ay = entity.gravity.g
+                        entity.kinematics.sources['gravity'].ay = entity.gravity.g
+                        entity.kinematics.sources['gravity'].target_vy = entity.gravity.terminal_velocity
+
+                    # Terminal
                     else:
-                        entity.kinematics.ay = 0
-                else:
-                    entity.kinematics.ay = 0
+                        entity.kinematics.sources['gravity'].ay = 0
 
 
-
-    def CheckGrounded(self, world):
-        for key, entity in world.entity_manager.entitys.iteritems():
-            if entity.gravity != None:
-                below_left_pixel = coord_transforms.GetEntityBelowLeftPixel(entity)
-                below_right_pixel = coord_transforms.GetEntityBelowRightPixel(entity)
-
-                below_left_tile = tile_functions.GetTile(below_left_pixel, world.room.tilemap)
-                below_right_tile = tile_functions.GetTile(below_right_pixel, world.room.tilemap)
-
-
-                if below_left_tile.type == 'solid' or below_right_tile.type == 'solid':
-                    entity.gravity.grounded = True
-                else:
-                    entity.gravity.grounded = False
+                # Grounded
+                elif entity.gravity.grounded == True:
+                    entity.kinematics.sources['gravity'].ay = 0

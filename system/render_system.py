@@ -124,10 +124,9 @@ class RenderSystem():
     def RenderEntity(self, entity, camera_rect, window_rect):
         # Load texture if not already loaded; set texture so don't have to
         # load it again
-
-
         if entity.display.texture == None:
             entity.display.texture = self.LoadTexture(entity.display.filepath)
+
 
         x_stretch = 1.*window_rect.w/camera_rect.w
         y_stretch = 1.*window_rect.h/camera_rect.h

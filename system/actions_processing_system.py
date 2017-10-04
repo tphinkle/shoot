@@ -11,6 +11,7 @@ import tile_functions
 import running_floating_action_processing_system
 import jumping_action_processing_system
 import dashing_action_processing_system
+import panning_action_processing_system
 
 
 class ActionsProcessingSystem():
@@ -27,125 +28,84 @@ class ActionsProcessingSystem():
         self.running_floating_action_processing_system = running_floating_action_processing_system.RunningFloatingActionProcessingSystem()
         self.jumping_action_processing_system = jumping_action_processing_system.JumpingActionProcessingSystem()
         self.dashing_action_processing_system = dashing_action_processing_system.DashingActionProcessingSystem()
+        self.panning_action_processing_system = panning_action_processing_system.PanningActionProcessingSystem()
 
+        self.subsystems = []
+        self.subsystems.append(self.running_floating_action_processing_system)
+        self.subsystems.append(self.jumping_action_processing_system)
+        self.subsystems.append(self.dashing_action_processing_system)
+        self.subsystems.append(self.panning_action_processing_system)
 
         self.action_process_map = {}
 
 
 
         # Horizontal motion
-        self.action_process_map['MoveLeft'] = self.ProcessMoveLeft
-        self.action_process_map['MoveRight'] = self.ProcessMoveRight
-
+        self.action_process_map['move'] = self.TriggerMove
 
         # Dashing action
-        self.action_process_map['Dash'] = self.ProcessDash
+        self.action_process_map['dash'] = self.TriggerDash
 
         # Jumping (jump, double jump, etc.)
-        self.action_process_map['Jump'] = self.ProcessJump
-
-
+        self.action_process_map['jump'] = self.TriggerJump
 
         # Panning (cameras)
-        self.action_process_map['PanLeft'] = self.ProcessPanLeft
-        self.action_process_map['PanRight'] = self.ProcessPanRight
-        self.action_process_map['PanUp'] = self.ProcessPanUp
-        self.action_process_map['PanDown'] = self.ProcessPanDown
-        self.action_process_map['PanHorizontalStop'] = self.ProcessPanHorizontalStop
-        self.action_process_map['PanVerticalStop'] = self.ProcessPanVerticalStop
-
-
+        self.action_process_map['pan'] = self.TriggerPan
 
         # Shoot buster
+        self.action_process_map['shoot'] = self.TriggerShootBuster
 
-        self.action_process_map['Shoot'] = self.ProcessShootBuster
+
+
 
 
 
     def ProcessActions(self, world, dt):
-        for key, entity in world.entity_manager.entitys.iteritems():
 
+        # Trigger actions
+        for key, entity in world.entity_manager.entitys.iteritems():
             # Process entity actions
             if entity.actions != None:
                 for action in entity.actions.proposed_actions:
-                    self.action_process_map[action](entity, dt)
-                self.ClearEntityActions(entity)
+                    self.action_process_map[action[0]](entity, action[1])
+                self.ClearEntityProposedActions(entity)
 
 
-        '''
-        Action subsystems
-        '''
 
-        # Running
-        self.running_floating_action_processing_system.ProcessRunningFloating(world)
-
-        # Jumping
-        self.jumping_action_processing_system.ProcessJumping(world)
-
-        # Dashing
-        self.dashing_action_processing_system.ProcessDashing(world, dt)
+        # Resolve action conflicts
 
 
-    def ClearEntityActions(self, entity):
+
+        # Process actions
+        for subsystem in self.subsystems:
+            subsystem.ProcessAction(world, dt)
+
+
+    def ClearEntityProposedActions(self, entity):
         entity.actions.proposed_actions = []
 
 
 
-    def ProcessMoveLeft(self, entity, dt):
-        entity.running_floating_action.status = 'triggered'
-        entity.running_floating_action.direction = 'left'
+    def TriggerMove(self, entity, args = None):
+        self.running_floating_action_processing_system.Trigger(entity, args)
+
+
+    def TriggerDash(self, entity, args = None):
+        self.dashing_action_processing_system.Trigger(entity, args)
+
+
+
+    def TriggerJump(self, entity, args = None):
+        self.jumping_action_processing_system.Trigger(entity, args)
 
 
 
 
-
-    def ProcessMoveRight(self, entity, dt):
-        entity.running_floating_action.status = 'triggered'
-        entity.running_floating_action.direction = 'right'
-
-    def ProcessDash(self, entity, dt):
-        entity.dashing_action.status = 'triggered'
-        entity.dashing_action.direction = entity.orientation.facing
-
-    '''
-    Jumping actions
-    '''
-
-    def ProcessJump(self, entity, dt):
-        entity.jumping_action.active = True
+    def TriggerPan(self, entity, args = None):
+        self.panning_action_processing_system.Trigger(entity, args)
 
 
 
-    '''
-    Panning actions
-    '''
+    def TriggerShootBuster(self, entity, args = None):
 
-    def ProcessPanLeft(self, entity, dt):
-        entity.kinematics.vx = -1*entity.panning_action.xspeed
-
-    def ProcessPanRight(self, entity, dt):
-        entity.kinematics.vx = entity.panning_action.xspeed
-
-    def ProcessPanUp(self, entity, dt):
-        entity.kinematics.vy = -1*entity.panning_action.yspeed
-
-    def ProcessPanDown(self, entity, dt):
-        entity.kinematics.vy = entity.panning_action.yspeed
-
-    def ProcessPanHorizontalStop(self, entity, dt):
-        entity.kinematics.vx = 0
-
-    def ProcessPanVerticalStop(self, entity, dt):
-        entity.kinematics.vy = 0
-
-
-
-    '''
-    Buster actions
-    '''
-
-    def ProcessShootBuster(self, entity, dt):
-        pass
-
-    def ProcessChargeBuster(self, entity, dt):
         pass
