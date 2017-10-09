@@ -31,6 +31,8 @@ import shooting_action_component
 import status_component
 import factory_component
 import sprite_animation_component
+import friction_component
+import sound_component
 
 
 # SDL
@@ -49,6 +51,10 @@ class EntityManager():
         hero.display.source_rect = sdl2.SDL_Rect(213,18,30,34)
         hero.display.z = 1
 
+        # Friction
+        hero.friction = friction_component.FrictionComponent()
+        hero.friction.acceleration = 1000.
+
         # Kinematics
         hero.kinematics = kinematics_component.KinematicsComponent()
         hero.kinematics.x = 800
@@ -59,23 +65,25 @@ class EntityManager():
 
 
 
+
         # Actions component
         hero.actions = actions_component.ActionsComponent()
 
         # Running action
         hero.running_floating_action = running_floating_action_component.RunningFloatingActionComponent()
+        hero.running_floating_action.direction = 'right'
         hero.running_floating_action.running_base_speed = 128
         hero.running_floating_action.floating_base_speed = 128
 
         # Jumping action
         hero.jumping_action = jumping_action_component.JumpingActionComponent()
         hero.jumping_action.period = .25
-        hero.jumping_action.initial_speed = 256.
-        hero.jumping_action.increment_speed = 64.
-        hero.jumping_action.acceleration = 128.
+        hero.jumping_action.initial_speed = 300.
+        hero.jumping_action.acceleration = 640.
 
         # Dashing action
         hero.dashing_action = dashing_action_component.DashingActionComponent()
+        hero.dashing_action.period = 0.5
         hero.dashing_action.base_speed = 256
 
 
@@ -89,8 +97,8 @@ class EntityManager():
 
         # Gravity
         hero.gravity = gravity_component.GravityComponent()
-        hero.gravity.g = 256.
-        hero.gravity.terminal_velocity = 1024.
+        hero.gravity.g = 1600.
+        hero.gravity.terminal_velocity = 1500.
 
 
 
@@ -161,35 +169,26 @@ class EntityManager():
         dashing_animation.rects = [sdl2.SDL_Rect(287, 127, 28, 31),
         sdl2.SDL_Rect(319, 132, 38, 26)]
         dashing_animation.clock = 0.
-        dashing_animation.period = .5
+        dashing_animation.period = .05
         dashing_animation.total_frames = len(dashing_animation.rects)
         dashing_animation.type = 'terminating'
         hero.sprite_animation.animations.append(dashing_animation)
 
-        hero.sprite_animation.active_animation = running_animation
+
+        default_animation = sprite_animation_component.Animation('default')
+
+        default_animation.rects = [sdl2.SDL_Rect(213, 18, 30, 34),
+        sdl2.SDL_Rect(247, 18, 30, 34),
+        sdl2.SDL_Rect(281, 18, 30, 34)]
+        default_animation.clock = 0.
+        default_animation.period = 1
+        default_animation.total_frames = len(default_animation.rects)
+        default_animation.type = 'cyclical'
+        hero.sprite_animation.animations.append(default_animation)
 
 
-        return hero
-
-
-
-    def CreateBusterShot(self, customer = None):
-        buster_shot = self.CreateEntity('BusterShot')
-
-        # Kinematics
-        buster_shot.kinematics = kinematics_component.KinematicsComponent()
-
-
-        # Shape
-        buster_shot.shape = shape_component.ShapeComponent()
-        buster_shot.shape.w = 16
-        buster_shot.shape.h = 16
-
-        # Damage component
-        # buster_shot.damage = damage_component.DamageComponent()
-        # buster_shot.damage.damage = 3
-
-        return buster_shot
+        hero.sprite_animation.default_animation = default_animation
+        hero.sprite_animation.active_animation = default_animation
 
 
 

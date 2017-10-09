@@ -200,9 +200,17 @@ class TilemapCollisionSystem():
 
 
     def CheckGrounded(self, entity, tilemap):
+        '''
         belowcenter_pixel = coord_transforms.GetEntityBelowCenterPixel(entity)
         below_y = coord_transforms.GetEntityBelowY(entity)
         center_x = coord_transforms.GetEntityCenterX(entity)
+        '''
+
+
+        belowcenter_pixel = coord_transforms.GetEntityProposedBelowCenterPixel(entity)
+        below_y = coord_transforms.GetEntityProposedBelowY(entity)
+        center_x = coord_transforms.GetEntityProposedCenterX(entity)
+
 
         tile = tile_functions.GetTile(belowcenter_pixel, tilemap)
         tile_x = int(center_x - center_x%16)

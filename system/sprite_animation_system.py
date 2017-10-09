@@ -9,25 +9,7 @@ class SpriteAnimationSystem():
                     self.UpdateHeroSprite(entity, dt)
 
 
-    def SetEntitySpriteAnimation(self, entity, name, dt):
-        active_name = entity.sprite_animation.active_animation.name
 
-
-        # Previous action still active
-        if active_name == name:
-            self.UpdateActiveAnimation(entity, dt)
-
-
-        # Switched action
-        else:
-            entity.sprite_animation.active_animation.clock = 0
-            entity.sprite_animation.active_animation.counter = 0
-            entity.sprite_animation.active_animation = self.GetAnimation(entity, name)
-
-
-        # Change display component
-        counter = entity.sprite_animation.active_animation.counter
-        entity.display.source_rect = entity.sprite_animation.active_animation.rects[counter]
 
 
     def UpdateActiveAnimation(self, entity, dt):
@@ -54,6 +36,37 @@ class SpriteAnimationSystem():
             if animation.name == name:
                 return animation
 
+        # Animation not found; return default
+        return entity.sprite_animation.default_animation
+
+
+
+
+    def SetEntitySpriteAnimation(self, entity, name, dt):
+
+
+        active_name = entity.sprite_animation.active_animation.name
+
+
+        # Previous action still active
+        if active_name == name:
+            self.UpdateActiveAnimation(entity, dt)
+
+
+        # Switched action
+        else:
+
+            # Reset the active animation
+            entity.sprite_animation.active_animation.clock = 0
+            entity.sprite_animation.active_animation.counter = 0
+
+            # Set the new active animation
+            entity.sprite_animation.active_animation = self.GetAnimation(entity, name)
+
+
+        # Change display component
+        counter = entity.sprite_animation.active_animation.counter
+        entity.display.source_rect = entity.sprite_animation.active_animation.rects[counter]
 
 
 
@@ -64,17 +77,25 @@ class SpriteAnimationSystem():
 
 
     def UpdateHeroSprite(self, hero, dt):
-        # Running
-        if hero.running_floating_action.status == 'active':
-            if hero.running_floating_action.mode == 'running':
-                self.SetEntitySpriteAnimation(hero, 'running', dt)
-
 
         # Dashing
-        elif hero.dashing_action.status == 'active':
+        if hero.dashing_action.status == 'active':
             self.SetEntitySpriteAnimation(hero, 'dashing', dt)
 
 
+        # Running
+        elif hero.running_floating_action.status == 'active':
+            if hero.running_floating_action.mode == 'running':
+                self.SetEntitySpriteAnimation(hero, 'running', dt)
+
+            elif hero.running_floating_action.mode == 'floating':
+                self.SetEntitySpriteAnimation(hero, 'floating', dt)
+
+
+
+
+        else:
+            self.SetEntitySpriteAnimation(hero, 'default', dt)
 
 
 

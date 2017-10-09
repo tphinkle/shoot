@@ -39,20 +39,27 @@ class ControllerInputSystem:
 
                     # Button pressed
                     if (input.type == sdl2.SDL_JOYBUTTONDOWN):
+                        print input.jbutton.button
 
-                        if input.jbutton.button == 1:
+                        if input.jbutton.button == 0:
+                            buttons.append('A_Press')
+
+                        elif input.jbutton.button == 1:
                             buttons.append('B_Press')
 
-                        if input.jbutton.button == 3:
+                        elif input.jbutton.button == 3:
                             buttons.append('Y_Press')
 
                     # Button released
                     elif (input.type == sdl2.SDL_JOYBUTTONUP):
 
-                        if input.jbutton.button == 1:
+                        if input.jbutton.button == 0:
+                            buttons.append('A_Release')
+
+                        elif input.jbutton.button == 1:
                             buttons.append('B_Release')
 
-                        if input.jbutton.button == 3:
+                        elif input.jbutton.button == 3:
                             buttons.append('Y_Release')
 
 

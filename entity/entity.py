@@ -6,6 +6,7 @@ class Entity():
         self.sprite_animation = None
         self.kinematics = None
         self.gravity = None
+        self.friction = None
         self.tilemap_collidable = None
         self.shape = None
         self.controller_input = None

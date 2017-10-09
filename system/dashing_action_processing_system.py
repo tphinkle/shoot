@@ -1,3 +1,16 @@
+# Python standard library
+import sys
+
+
+# Game specific
+sys.path.append('../component/')
+import kinematics_component
+
+sys.path.append('../functions/')
+import constants
+
+
+
 class DashingActionProcessingSystem(object):
 
     def __init__(self):
@@ -13,17 +26,19 @@ class DashingActionProcessingSystem(object):
 
     def StartAction(self, entity, args):
         entity.dashing_action.status = 'active'
-        entity.kinematics.sources['dashing'].ax = 9999
+
         if entity.orientation.facing == 'left':
-            entity.kinematics.sources['dashing'].target_vx = -entity.dashing_action.speed()
+            entity.dashing_action.direction = 'left'
+
+
         elif entity.orientation.facing == 'right':
-            entity.kinematics.sources['dashing'].target_vx = entity.dashing_action.speed()
+            entity.dashing_action.direction = 'right'
 
 
-    def StopAction(self, entity, args):
+
+    def StopAction(self, entity, args = None):
         entity.dashing_action.status = 'inactive'
         entity.dashing_action.timer = 0
-        entity.kinematics.sources['dashing'].ax = 0
 
 
 
@@ -40,18 +55,19 @@ class DashingActionProcessingSystem(object):
 
                     # Check timer
                     if entity.dashing_action.timer >= entity.dashing_action.period:
-                        self.StopAction()
+                        self.StopAction(entity)
                         return
 
 
                     # Complete the action
                     if self.CheckDashValid(entity):
+                        self.Dash(entity)
                         self.UpdateTimer(entity, dt)
                         pass
 
                     # Action invalid; stop
                     else:
-                        self.StopAction()
+                        self.StopAction(entity)
 
 
 
@@ -61,6 +77,18 @@ class DashingActionProcessingSystem(object):
 
 
 
+    def Dash(self, entity):
+        if entity.dashing_action.direction == 'left':
+            vx_target = -entity.dashing_action.speed()
+            ax = -constants.infinity
+            x_source = kinematics_component.KinematicsXSource(ax, vx_target)
+            entity.kinematics.x_sources.append(x_source)
+
+        elif entity.dashing_action.direction == 'right':
+            vx_target = entity.dashing_action.speed()
+            ax = constants.infinity
+            x_source = kinematics_component.KinematicsXSource(ax, vx_target)
+            entity.kinematics.x_sources.append(x_source)
 
 
 
@@ -71,10 +99,6 @@ class DashingActionProcessingSystem(object):
         else:
             return False
 
-
-    def StopDash(self, entity):
-        entity.dashing_action.timer = 0.
-        entity.dashing_action.status = 'inactive'
 
 
     def UpdateTimer(self, entity, dt):

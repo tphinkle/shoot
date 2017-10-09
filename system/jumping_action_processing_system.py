@@ -1,3 +1,14 @@
+# Python standard library
+import sys
+
+# Game specific
+sys.path.append('../component/')
+import kinematics_component
+
+sys.path.append('../functions/')
+import constants
+
+
 class JumpingActionProcessingSystem(object):
 
     def __init__(self):
@@ -18,8 +29,13 @@ class JumpingActionProcessingSystem(object):
         if entity.gravity.grounded == True:
             entity.jumping_action.status = 'active'
             entity.jumping_action.mode = 'single'
-            entity.kinematics.vy = entity.jumping_action.speed()
-            #entity.kinematics.sources['jumping'].ay = -entity.jumping_action.initial_acceleration
+
+
+            ay = -constants.infinity
+            target_vy = -entity.jumping_action.initial_speed
+
+            y_source = kinematics_component.KinematicsYSource(ay, target_vy)
+            entity.kinematics.y_sources.append(y_source)
 
         # Double jump
         elif entity.jumping_action.double_jump_available == True:
@@ -29,7 +45,6 @@ class JumpingActionProcessingSystem(object):
 
     def StopAction(self, entity, args = None):
         entity.jumping_action.status = 'inactive'
-        entity.kinematics.sources['jumping'].ay = 0
         entity.jumping_action.timer = 0
 
 
@@ -51,7 +66,7 @@ class JumpingActionProcessingSystem(object):
 
                         # Check timer
                         if entity.jumping_action.timer >= entity.jumping_action.period:
-                            self.StopAction()
+                            self.StopAction(entity)
                             return
 
                         self.SingleJump(entity, dt)
@@ -62,7 +77,7 @@ class JumpingActionProcessingSystem(object):
                     elif entity.jumping_action.mode == 'double':
                         # Check timer
                         if entity.jumping_action.timer >= entity.jumping_action.period:
-                            self.StopAction()
+                            self.StopAction(entity)
                             return
 
                     self.UpdateTimer(entity, dt)
@@ -77,13 +92,19 @@ class JumpingActionProcessingSystem(object):
 
     def SingleJump(self, entity, dt):
 
-        entity.kinematics.sources['jumping'].ay = -entity.jumping_action.increment_acceleration
+
+        ay = -entity.jumping_action.acceleration*2.25
+        target_vy = -999999999
+
+        y_source = kinematics_component.KinematicsYSource(ay, target_vy)
+        entity.kinematics.y_sources.append(y_source)
 
 
 
 
     def DoubleJump(self, entity):
-        entity.kinematics.ay_sources['jumping'] = entity.jumping_action.acceleration
+        print 'double jump!'
+        pass
 
 
 

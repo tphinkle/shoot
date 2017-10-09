@@ -13,7 +13,7 @@ def GetEntityRightX(entity):
     return entity.kinematics.x + entity.shape.w - 1
 
 def GetEntityAdjRightX(entity):
-    return entity.kinematics.x + entity.shape.w
+    return entity.kinematics.x + entity .shape.w
 
 
 # Above
@@ -114,3 +114,138 @@ def GetEntityBelowAdjRightPixel(entity):
 
 def GetEntityBelowY(entity):
     return entity.kinematics.y + entity.shape.h
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def GetEntityProposedAdjLeftX(entity):
+    return entity.kinematics.x_proposed - 1
+
+def GetEntityProposedLeftX(entity):
+    return entity.kinematics.x_proposed
+
+def GetEntityProposedCenterX(entity):
+    return entity.kinematics.x_proposed + entity.shape.w/2 - 1
+
+def GetEntityProposedRightX(entity):
+    return entity.kinematics.x_proposed + entity.shape.w - 1
+
+def GetEntityProposedAdjRightX(entity):
+    return entity.kinematics.x_proposed + entity.shape.w
+
+
+# Above
+def GetEntityProposedAboveAdjLeftPixel(entity):
+    return entity.kinematics.x_proposed - 1, entity.kinematics.y_proposed - 1
+
+def GetEntityProposedAboveLeftPixel(entity):
+    return entity.kinematics.x_proposed, entity.kinematics.y_proposed-1
+
+def GetEntityProposedAboveCenterPixel(entity):
+    return entity.kinematics.x_proposed + entity.shape.w/2-1, entity.kinematics.y_proposed-1
+
+def GetEntityProposedAboveRightPixel(entity):
+    return entity.kinematics.x_proposed + entity.shape.w-1, entity.posiition.y-1
+
+def GetEntityProposedAboveAdjRightPixel(entity):
+    return entity.kinematics.x_proposed + entity.shape.w, entity.kinematics.y_proposed - 1
+
+def GetEntityProposedAboveY(entity):
+    return entity.kinematics.y_proposed - 1
+
+# Top
+
+def GetEntityProposedTopAdjLeftPixel(entity):
+    return entity.kinematics.x_proposed-1, entity.kinematics.y_proposed
+
+def GetEntityProposedTopLeftPixel(entity):
+    return entity.kinematics.x_proposed, entity.kinematics.y_proposed
+
+def GetEntityProposedTopCenterPixel(entity):
+    return entity.kinematics.x_proposed + entity.shape.w/2-1, entity.kinematics.y_proposed
+
+def GetEntityProposedTopRightPixel(entity):
+    return entity.kinematics.x_proposed + entity.shape.w-1, entity.kinematics.y_proposed
+
+def GetEntityProposedTopAdjRightPixel(entity):
+    return entity.kinematics.x_proposed + entity.shape.w, entity.kinematics.y_proposed
+
+def GetEntityProposedTopY(entity):
+    return entity.kinematics.y_proposed
+
+# Middle
+
+def GetEntityProposedMiddleAdjLeftPixel(entity):
+    return entity.kinematics.x_proposed - 1, entity.kinematics.y_proposed + entity.shape.h/2 - 1
+
+def GetEntityProposedMiddleLeftPixel(entity):
+    return entity.kinematics.x_proposed, entity.kinematics.y_proposed + entity.shape.h/2 - 1
+
+def GetEntityProposedMiddleCenterPixel(entity):
+    return entity.kinematics.x_proposed + entity.shape.w/2-1, entity.kinematics.y_proposed + entity.shape.h/2-1
+
+def GetEntityProposedMiddleRightPixel(entity):
+    return entity.kinematics.x_proposed + entity.shape.w-1, entity.kinematics.y_proposed + entity.shape.h/2-1
+
+def GetEntityProposedMiddleAdjRightPixel(entity):
+    return entity.kinematics.x_proposed + entity.shape.w, entity.kinematics.y_proposed + entity.shape.h/2 - 1
+
+def GetEntityProposedMiddleY(entity):
+    return entity.kinematics.y_proposed + entity.shape.h/2-1
+
+# Bottom
+
+def GetEntityProposedBottomAdjLeftPixel(entity):
+    return entity.kinematics.x_proposed - 1, entity.kinematics.y_proposed + entity.shape.h - 1
+
+def GetEntityProposedBottomLeftPixel(entity):
+    return entity.kinematics.x_proposed, entity.kinematics.y_proposed + entity.shape.h-1
+
+def GetEntityProposedBottomCenterPixel(entity):
+    return entity.kinematics.x_proposed + entity.shape.w/2-1, entity.kinematics.y_proposed + entity.shape.h-1
+
+def GetEntityProposedBottomRightPixel(entity):
+    return entity.kinematics.x_proposed + entity.shape.w-1, entity.kinematics.y_proposed + entity.shape.h-1
+
+def GetEntityProposedBottomAdjRightPixel(entity):
+    return entity.kinematics.x_proposed + entity.shape.w, entity.kinematics.y_proposed + entity.shape.h - 1
+
+def GetEntityProposedBottomY(entity):
+    return entity.kinematics.y_proposed + entity.shape.h - 1
+
+# Below
+
+def GetEntityProposedBelowAdjLeftPixel(entity):
+    return entity.kinematics.x_proposed - 1, entity.kinematics.y_proposed + entity.shape.h
+
+def GetEntityProposedBelowLeftPixel(entity):
+    return entity.kinematics.x_proposed, entity.kinematics.y_proposed + entity.shape.h
+
+def GetEntityProposedBelowCenterPixel(entity):
+    return entity.kinematics.x_proposed + entity.shape.w/2-1, entity.kinematics.y_proposed + entity.shape.h
+
+def GetEntityProposedBelowRightPixel(entity):
+    return entity.kinematics.x_proposed+entity.shape.w-1, entity.kinematics.y_proposed + entity.shape.h
+
+def GetEntityProposedBelowAdjRightPixel(entity):
+    return entity.kinematics.x_proposed + entity.shape.w, entity.kinematics.y_proposed + entity.shape.h
+
+def GetEntityProposedBelowY(entity):
+    return entity.kinematics.y_proposed + entity.shape.h

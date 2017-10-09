@@ -13,37 +13,31 @@ class KinematicsComponent():
 
 
         # Velocity
-        self.vx_sources = {}
-        self.vy_sources = {}
-
         self.vx = 0
         self.vy = 0
 
         # Acceleration
-        self.ax_sources = {}
-        self.ay_sources = {}
         self.ax = 0
         self.ay = 0
-
-
-        # Damping
-        self.dampingx = 0
-        self.dampingy = 0
-
-        # Source terms
-        source_names = ['gravity', 'running_floating', 'jumping', 'dashing']
-        self.sources = {name: KinematicsSource() for name in source_names}
+        self.x_sources = []
+        self.y_sources = []
 
 
 
-class KinematicsSource():
+class KinematicsXSource():
 
-    def __init__(self):
-        # Target: accelerate up until a maximum point
+    def __init__(self, ax = 0, target_vx = 0):
+        self.ax = ax
+        self.target_vx = target_vx
 
-        self.target_vx = None
-        self.target_vy = None
-        self.ax = 0
-        self.ay = 0
+
+        pass
+
+class KinematicsYSource():
+
+    def __init__(self, ay = 0, target_vy = 0):
+        self.ay = ay
+        self.target_vy = target_vy
+
 
         pass

@@ -5,6 +5,9 @@ import sys
 sys.path.append('../functions/')
 import constants
 
+sys.path.append('../components/')
+import kinematics_component
+
 class RunningFloatingActionProcessingSystem():
 
     def __init__(self):
@@ -32,13 +35,9 @@ class RunningFloatingActionProcessingSystem():
     def StopAction(self, entity, args = None):
         entity.running_floating_action.status = 'inactive'
 
-        if entity.running_floating_action.direction == 'left':
-            entity.kinematics.sources['running_floating'].ax = constants.infinity
+        #self.Stop(entity)
 
-        elif entity.running_floating_action.direction == 'right':
-            entity.kinematics.sources['running_floating'].ax = -constants.infinity
 
-        entity.kinematics.sources['running_floating'].target_vx = 0
 
 
 
@@ -51,18 +50,16 @@ class RunningFloatingActionProcessingSystem():
 
                         # Check run or float
                         if entity.gravity.grounded:
-                            self.mode = 'running'
+                            entity.running_floating_action.mode = 'running'
                             self.Run(entity)
 
                         elif not entity.gravity.grounded:
-                            self.mode = 'floating'
+                            entity.running_floating_action.mode = 'floating'
                             self.Float(entity)
 
                 # Inactive
                 elif entity.running_floating_action.status == 'inactive':
-
                     pass
-
 
 
 
@@ -71,28 +68,66 @@ class RunningFloatingActionProcessingSystem():
     Running functions
     '''
 
+    def Stop(self, entity):
+        entity.running_floating_action.status = 'inactive'
+
+        pass
+
     def Run(self, entity):
 
         # Get correct acceleration
         entity.running_floating_action.acceleration = constants.infinity
 
-        # Set target velocity:
+        # Run left
         if entity.running_floating_action.direction == 'left':
+            self.RunLeft(entity)
 
-            if entity.orientation:
-                entity.orientation.facing = 'left'
-
-            entity.kinematics.sources['running_floating'].ax = -entity.running_floating_action.acceleration
-            entity.kinematics.sources['running_floating'].target_vx = -entity.running_floating_action.running_speed()
 
         # Run right
         elif entity.running_floating_action.direction == 'right':
+            self.RunRight(entity)
 
-            if entity.orientation:
-                entity.orientation.facing = 'right'
 
-            entity.kinematics.sources['running_floating'].ax = entity.running_floating_action.acceleration
-            entity.kinematics.sources['running_floating'].target_vx = entity.running_floating_action.running_speed()
+
+    def RunLeft(self, entity):
+        # Change orientation
+        if entity.orientation:
+            entity.orientation.facing = 'left'
+
+
+        # Entity is moving left faster than running speed
+        if entity.kinematics.vx < -entity.running_floating_action.running_speed():
+            return
+
+
+        # Entity is moving right
+        ax = -entity.running_floating_action.acceleration
+        target_vx = -entity.running_floating_action.running_speed()
+
+        if entity.kinematics.vx < -entity.running_floating_action.running_speed():
+            ax = ax*(-1.)
+
+        x_source = kinematics_component.KinematicsXSource(ax, target_vx)
+        entity.kinematics.x_sources.append(x_source)
+
+
+
+    def RunRight(self, entity):
+        if entity.orientation:
+            entity.orientation.facing = 'right'
+
+        if entity.kinematics.vx > entity.running_floating_action.running_speed():
+            return
+
+        ax = entity.running_floating_action.acceleration
+        target_vx = entity.running_floating_action.running_speed()
+
+        if entity.kinematics.vx > entity.running_floating_action.running_speed():
+            ax = ax*(-1.)
+
+        x_source = kinematics_component.KinematicsXSource(ax, target_vx)
+        entity.kinematics.x_sources.append(x_source)
+
 
 
     '''
@@ -109,8 +144,13 @@ class RunningFloatingActionProcessingSystem():
             if entity.orientation:
                 entity.orientation.facing = 'left'
 
-            entity.kinematics.sources['running_floating'].ax = -entity.running_floating_action.acceleration
-            entity.kinematics.sources['running_floating'].target_vx = -entity.running_floating_action.running_speed()
+            if entity.kinematics.vx < -entity.running_floating_action.running_speed():
+                return
+
+            ax = -entity.running_floating_action.acceleration
+            target_vx = -entity.running_floating_action.floating_speed()
+            x_source = kinematics_component.KinematicsXSource(ax, target_vx)
+            entity.kinematics.x_sources.append(x_source)
 
 
 
@@ -123,5 +163,10 @@ class RunningFloatingActionProcessingSystem():
             if entity.orientation:
                 entity.orientation.facing = 'right'
 
-            entity.kinematics.sources['running_floating'].ax = entity.running_floating_action.acceleration
-            entity.kinematics.sources['running_floating'].target_vx = entity.running_floating_action.running_speed()
+            if entity.kinematics.vx > entity.running_floating_action.running_speed():
+                return
+
+            ax = entity.running_floating_action.acceleration
+            target_vx = entity.running_floating_action.floating_speed()
+            x_source = kinematics_component.KinematicsXSource(ax, target_vx)
+            entity.kinematics.x_sources.append(x_source)

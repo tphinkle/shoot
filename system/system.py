@@ -33,7 +33,7 @@ import controller_input_system
 import ai_system
 import actions_processing_system
 
-
+import friction_system
 import kinematics_system
 import gravity_system
 
@@ -112,6 +112,7 @@ class System:
 
 
         self.gravity_system = gravity_system.GravitySystem()
+        self.friction_system = friction_system.FrictionSystem()
         self.ai_system = ai_system.AISystem()
         self.tilemap_collision_system = tilemap_collision_system.TilemapCollisionSystem()
 
@@ -153,6 +154,8 @@ class System:
             # Game
             if self.game_timer.Update():
 
+                print 'new game loop update'
+
 
                 inputs = self.GetInputs()
                 self.controller_input_system.HandleInputEventDriven(self.joystick, inputs, self.world)
@@ -167,11 +170,16 @@ class System:
 
 
                 self.gravity_system.ProcessGravity(self.world)
+
+
+
+                self.friction_system.ProcessFriction(self.world)
+
                 self.kinematics_system.UpdateKinematics(self.world, self.game_timer.dt)
+
+
+
                 self.tilemap_collision_system.ProcessTilemapCollisions(self.world)
-
-
-
 
 
                 self.kinematics_system.ValidatePosition(self.world)
