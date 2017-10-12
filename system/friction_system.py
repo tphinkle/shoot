@@ -26,15 +26,17 @@ class FrictionSystem():
                     if entity.kinematics.vx == 0:
                         return
 
-                    vx_target = 0
+                    if entity.grounded == True:
 
-                    # Entity moving right
-                    if entity.kinematics.vx > 0:
-                        ax = -entity.friction.acceleration
+                        vx_target = 0
 
-                    # Entity moving left
-                    elif entity.kinematics.vx < 0:
-                        ax = entity.friction.acceleration
+                        # Entity moving right
+                        if entity.kinematics.vx > 0:
+                            ax = -entity.friction.acceleration
 
-                    x_source = kinematics_component.KinematicsXSource(ax, vx_target)
-                    entity.kinematics.x_sources.append(x_source)
+                        # Entity moving left
+                        elif entity.kinematics.vx < 0:
+                            ax = entity.friction.acceleration
+
+                        x_source = kinematics_component.KinematicsXSource(ax, vx_target)
+                        entity.kinematics.x_sources.append(x_source)

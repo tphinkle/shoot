@@ -64,13 +64,10 @@ class ControllerInputSystem:
 
 
                 if self.x_previous < 100 and self.x_current > 100:
-                    print 'R'
                     buttons.append('Right_Press')
                 elif self.x_previous > -100 and self.x_current < -100:
-                    print 'L'
                     buttons.append('Left_Press')
                 elif abs(self.x_previous) > 100 and abs(self.x_current) < 100:
-                    print 'Release'
                     buttons.append('LeftRight_Release')
 
 
@@ -78,8 +75,9 @@ class ControllerInputSystem:
 
                 # Convert button presses into proposed actions
                 for button in buttons:
-                    action = entity.controller_input.action_mapping[button]
-                    entity.actions.proposed_actions.append(action)
+                    actions = entity.controller_input.action_mapping[button]
+                    for action in actions:
+                        entity.actions.proposed_actions.append(action)
 
 
     def UpdateDPad(self, joystick):

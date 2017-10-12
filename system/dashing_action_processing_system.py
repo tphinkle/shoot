@@ -18,13 +18,13 @@ class DashingActionProcessingSystem(object):
 
 
 
-    def Trigger(self, entity, args):
-        if 'start' in args:
-            self.StartAction(entity, args)
-        elif 'stop' in args:
-            self.StopAction(entity, args)
+    def Trigger(self, entity, action):
+        if action['trigger'] == 'start':
+            self.StartAction(entity, action)
+        elif action['trigger'] == 'stop':
+            self.StopAction(entity)
 
-    def StartAction(self, entity, args):
+    def StartAction(self, entity, action):
         entity.dashing_action.status = 'active'
 
         if entity.orientation.facing == 'left':
@@ -36,7 +36,7 @@ class DashingActionProcessingSystem(object):
 
 
 
-    def StopAction(self, entity, args = None):
+    def StopAction(self, entity):
         entity.dashing_action.status = 'inactive'
         entity.dashing_action.timer = 0
 

@@ -14,6 +14,7 @@ class Entity():
         self.ai = None
         self.following = None
         self.orientation = None
+        self.factory = None
 
         self.status = None
 
@@ -21,3 +22,6 @@ class Entity():
         self.jumping_action = None
         self.dashing_action = None
         self.panning_action = None
+        self.shooting_action = None
+
+        self.on_death = None

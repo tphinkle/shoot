@@ -82,6 +82,13 @@ class SpriteAnimationSystem():
         if hero.dashing_action.status == 'active':
             self.SetEntitySpriteAnimation(hero, 'dashing', dt)
 
+        # Jumping
+        elif hero.jumping_action.status == 'active':
+            self.SetEntitySpriteAnimation(hero, 'jumping', dt)
+
+        
+
+
 
         # Running
         elif hero.running_floating_action.status == 'active':

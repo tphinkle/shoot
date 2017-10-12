@@ -17,22 +17,22 @@ class RunningFloatingActionProcessingSystem():
 
 
 
-    def Trigger(self, entity, args):
-        if 'start' in args:
-            self.StartAction(entity, args)
-        elif 'stop' in args:
-            self.StopAction(entity, args)
+    def Trigger(self, entity, action):
+        if action['trigger'] == 'start':
+            self.StartAction(entity, action)
+        if action['trigger'] == 'stop':
+            self.StopAction(entity, action)
 
-    def StartAction(self, entity, args):
+    def StartAction(self, entity, action):
         entity.running_floating_action.status = 'active'
 
-        if 'left' in args:
+        if action['direction'] == 'left':
             entity.running_floating_action.direction = 'left'
 
-        elif 'right' in args:
+        elif action['direction'] == 'right':
             entity.running_floating_action.direction = 'right'
 
-    def StopAction(self, entity, args = None):
+    def StopAction(self, entity, action = None):
         entity.running_floating_action.status = 'inactive'
 
         #self.Stop(entity)
@@ -75,9 +75,6 @@ class RunningFloatingActionProcessingSystem():
 
     def Run(self, entity):
 
-        # Get correct acceleration
-        entity.running_floating_action.acceleration = constants.infinity
-
         # Run left
         if entity.running_floating_action.direction == 'left':
             self.RunLeft(entity)
@@ -101,7 +98,7 @@ class RunningFloatingActionProcessingSystem():
 
 
         # Entity is moving right
-        ax = -entity.running_floating_action.acceleration
+        ax = -entity.friction.acceleration
         target_vx = -entity.running_floating_action.running_speed()
 
         if entity.kinematics.vx < -entity.running_floating_action.running_speed():
@@ -119,7 +116,7 @@ class RunningFloatingActionProcessingSystem():
         if entity.kinematics.vx > entity.running_floating_action.running_speed():
             return
 
-        ax = entity.running_floating_action.acceleration
+        ax = entity.friction.acceleration
         target_vx = entity.running_floating_action.running_speed()
 
         if entity.kinematics.vx > entity.running_floating_action.running_speed():
@@ -148,7 +145,12 @@ class RunningFloatingActionProcessingSystem():
                 return
 
             ax = -entity.running_floating_action.acceleration
-            target_vx = -entity.running_floating_action.floating_speed()
+
+            if entity.kinematics.vx == 0:
+                target_vx = -entity.running_floating_action.floating_speed()
+            elif entity.kinematics.vx != 0:
+                target_vx = -abs(entity.kinematics.vx)
+
             x_source = kinematics_component.KinematicsXSource(ax, target_vx)
             entity.kinematics.x_sources.append(x_source)
 
@@ -167,6 +169,11 @@ class RunningFloatingActionProcessingSystem():
                 return
 
             ax = entity.running_floating_action.acceleration
-            target_vx = entity.running_floating_action.floating_speed()
+
+            if entity.kinematics.vx == 0:
+                target_vx = entity.running_floating_action.floating_speed()
+            elif entity.kinematics.vx != 0:
+                target_vx = abs(entity.kinematics.vx)
+
             x_source = kinematics_component.KinematicsXSource(ax, target_vx)
             entity.kinematics.x_sources.append(x_source)

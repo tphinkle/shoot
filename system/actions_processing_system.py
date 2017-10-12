@@ -12,6 +12,7 @@ import running_floating_action_processing_system
 import jumping_action_processing_system
 import dashing_action_processing_system
 import panning_action_processing_system
+import shooting_action_processing_system
 
 
 class ActionsProcessingSystem():
@@ -29,12 +30,15 @@ class ActionsProcessingSystem():
         self.jumping_action_processing_system = jumping_action_processing_system.JumpingActionProcessingSystem()
         self.dashing_action_processing_system = dashing_action_processing_system.DashingActionProcessingSystem()
         self.panning_action_processing_system = panning_action_processing_system.PanningActionProcessingSystem()
+        self.shooting_action_processing_system = shooting_action_processing_system.ShootingActionProcessingSystem()
+
 
         self.subsystems = []
         self.subsystems.append(self.running_floating_action_processing_system)
         self.subsystems.append(self.jumping_action_processing_system)
         self.subsystems.append(self.dashing_action_processing_system)
         self.subsystems.append(self.panning_action_processing_system)
+        self.subsystems.append(self.shooting_action_processing_system)
 
         self.action_process_map = {}
 
@@ -53,7 +57,7 @@ class ActionsProcessingSystem():
         self.action_process_map['pan'] = self.TriggerPan
 
         # Shoot buster
-        self.action_process_map['shoot'] = self.TriggerShootBuster
+        self.action_process_map['shoot'] = self.TriggerShoot
 
 
 
@@ -67,7 +71,7 @@ class ActionsProcessingSystem():
             # Process entity actions
             if entity.actions != None:
                 for action in entity.actions.proposed_actions:
-                    self.action_process_map[action[0]](entity, action[1])
+                    self.action_process_map[action['action']](entity, action)
                 self.ClearEntityProposedActions(entity)
 
 
@@ -86,26 +90,25 @@ class ActionsProcessingSystem():
 
 
 
-    def TriggerMove(self, entity, args = None):
-        self.running_floating_action_processing_system.Trigger(entity, args)
+    def TriggerMove(self, entity, action):
+        self.running_floating_action_processing_system.Trigger(entity, action)
 
 
-    def TriggerDash(self, entity, args = None):
-        self.dashing_action_processing_system.Trigger(entity, args)
-
-
-
-    def TriggerJump(self, entity, args = None):
-        self.jumping_action_processing_system.Trigger(entity, args)
+    def TriggerDash(self, entity, action):
+        self.dashing_action_processing_system.Trigger(entity, action)
 
 
 
-
-    def TriggerPan(self, entity, args = None):
-        self.panning_action_processing_system.Trigger(entity, args)
-
+    def TriggerJump(self, entity, action):
+        self.jumping_action_processing_system.Trigger(entity, action)
 
 
-    def TriggerShootBuster(self, entity, args = None):
 
-        pass
+
+    def TriggerPan(self, entity, action):
+        self.panning_action_processing_system.Trigger(entity, action)
+
+
+
+    def TriggerShoot(self, entity, action):
+        self.shooting_action_processing_system.Trigger(entity, action)

@@ -42,42 +42,44 @@ class AISystem():
             entity.kinematics.x_proposed = target.kinematics.x
 
 
-        args = []
 
         pan = False
+        xdirection = None
+        ydirection = None
         # Target moving right
         if target.kinematics.vx > 0:
             if target_pixel[0] - entity.kinematics.x > entity.following_ai.xlag:
                 pan = True
-                args.append('right')
+                xdirection = 'right'
 
         # Target moving left
         elif target.kinematics.vx < 0:
             if entity.kinematics.x + entity.shape.w - target_pixel[0] > entity.following_ai.xlag:
                 pan = True
-                args.append('left')
+                xdirection = 'left'
 
 
         # Target moving Down
         if target.kinematics.vy > 0:
             if target_pixel[1] - entity.kinematics.y > entity.following_ai.ylag:
                 pan = True
-                args.append('down')
+                ydirection = 'down'
 
 
         # Target moving Up
         elif target.kinematics.vy < 0:
             if entity.kinematics.y + entity.shape.h - target_pixel[1] > entity.following_ai.ylag:
                 pan = True
-                args.append('up')
+                ydirection = 'up'
+
 
 
         # Set 'Start' 'Stop' status
         if pan == True:
-            args = ['start'] + args
+            trigger = 'start'
         elif pan == False:
-            args = ['stop'] + args
+            trigger = 'stop'
 
 
 
-        entity.actions.proposed_actions.append(['pan', args])
+        entity.actions.proposed_actions.append({'action':'pan', 'trigger':trigger, 'xdirection':xdirection, 'ydirection':ydirection})

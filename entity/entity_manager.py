@@ -1,6 +1,7 @@
 # Standard library
 import sys
 import ctypes
+import random
 
 sys.path.append('/home/prestonh/Desktop/Programming/gamedev/shoot/shoot/entity')
 sys.path.append('/home/prestonh/Desktop/Programming/gamedev/shoot/shoot/component')
@@ -27,24 +28,42 @@ import running_floating_action_component
 import panning_action_component
 import jumping_action_component
 import dashing_action_component
-import shooting_action_component
 import status_component
 import factory_component
 import sprite_animation_component
 import friction_component
 import sound_component
+import shooting_action_component
+
+
 
 
 # SDL
 import sdl2
+
+
+def instance_counter(**kwargs):
+    def decorate(func):
+        for kwarg in kwargs:
+            setattr(func, kwarg, kwargs[kwarg])
+        return func
+    return decorate
+
+
 
 class EntityManager():
     def __init__(self):
         self.entitys = {}
         pass
 
+
+    @instance_counter(counter = 0)
     def CreateHero(self):
-        hero = self.CreateEntity('hero')
+        counter = 0
+
+        key = 'hero'
+        hero = entity.Entity(key)
+        self.RegisterEntity(hero, key, counter)
 
         # Display
         hero.display = display_component.DisplayComponent(b'/home/prestonh/Desktop/Programming/gamedev/shoot/shoot/resources/X.png')
@@ -53,7 +72,7 @@ class EntityManager():
 
         # Friction
         hero.friction = friction_component.FrictionComponent()
-        hero.friction.acceleration = 1000.
+        hero.friction.acceleration = 1750.
 
         # Kinematics
         hero.kinematics = kinematics_component.KinematicsComponent()
@@ -86,14 +105,25 @@ class EntityManager():
         hero.dashing_action.period = 0.5
         hero.dashing_action.base_speed = 256
 
+        # Shooting action
+        hero.shooting_action = shooting_action_component.ShootingActionComponent()
+
+        # Create weapons
+        buster = shooting_action_component.NormalGun()
+        hero.shooting_action.guns['buster'] = buster
+
+        charge_buster = shooting_action_component.ChargeGun()
+        hero.shooting_action.guns['charge_buster'] = charge_buster
+
+
 
 
         # Shooting action
-        hero.shooting_action = shooting_action_component.ShootingActionComponent()
-        hero.shooting_action.max_bullets = 3
-        hero.shooting_action.cooldown = 2
-        hero.shooting_action.bullet = 'BusterShot'
-        hero.shooting_action.last_shot = 0
+        hero.buster_shooting_action = shooting_action_component.ShootingActionComponent()
+        hero.buster_shooting_action.max_bullets = 3
+        hero.buster_shooting_action.cooldown = 2
+        hero.buster_shooting_action.bullet = 'BusterShot'
+        hero.buster_shooting_action.timer = 0
 
         # Gravity
         hero.gravity = gravity_component.GravityComponent()
@@ -174,6 +204,24 @@ class EntityManager():
         dashing_animation.type = 'terminating'
         hero.sprite_animation.animations.append(dashing_animation)
 
+        jumping_animation = sprite_animation_component.Animation('jumping')
+        jumping_animation.rects = [sdl2.SDL_Rect(5, 73, 24, 37),
+		sdl2.SDL_Rect(34, 69, 15, 41),
+		sdl2.SDL_Rect(55, 64, 19, 46)]
+        jumping_animation.clock = 0.
+        jumping_animation.period = .15
+        jumping_animation.total_frames = len(jumping_animation.rects)
+        jumping_animation.type = 'terminating'
+        hero.sprite_animation.animations.append(jumping_animation)
+
+        floating_animation = sprite_animation_component.Animation('floating')
+        floating_animation.rects = [sdl2.SDL_Rect(77, 69, 23, 41)]
+        floating_animation.clock = 0.
+        floating_animation.period = .25
+        floating_animation.total_frames = len(floating_animation.rects)
+        floating_animation.type = 'terminating'
+        hero.sprite_animation.animations.append(floating_animation)
+
 
         default_animation = sprite_animation_component.Animation('default')
 
@@ -191,9 +239,14 @@ class EntityManager():
         hero.sprite_animation.active_animation = default_animation
 
 
-
+    @instance_counter(counter = 0)
     def CreateCamera(self):
-        camera = self.CreateEntity('camera')
+        counter = 0
+
+        # Create and register
+        key = 'camera'
+        camera = entity.Entity(key)
+        self.RegisterEntity(camera, key, counter)
 
         # Position
         camera.kinematics = kinematics_component.KinematicsComponent()
@@ -230,11 +283,42 @@ class EntityManager():
 
         return camera
 
-    def CreateEntity(self, key, specifications = None):
-        new_entity = entity.Entity(key)
+
+
+    @instance_counter(counter = 0)
+    def CreateBusterShot(self, args):
+        counter = 0
+
+
+        # Create and register
+        key = 'buster_shot'
+        buster_shot = entity.Entity(key)
+        self.RegisterEntity(buster_shot, key, counter)
+
+        # Display
+        buster_shot.display = display_component.DisplayComponent(b'/home/prestonh/Desktop/Programming/gamedev/shoot/shoot/resources/X.png')
+        buster_shot.display.source_rect = sdl2.SDL_Rect(5, 377, 8, 6)
+        buster_shot.display.z = 1
+
+        # Shape
+        buster_shot.shape = shape_component.ShapeComponent()
+        buster_shot.shape.w = 8
+        buster_shot.shape.h = 6
+
+        # Kinematics
+        hero.kinematics = kinematics_component.KinematicsComponent()
+        hero.kinematics.x = 600
+        hero.kinematics.y = 800
+        hero.kinematics.x_proposed = hero.kinematics.x
+        hero.kinematics.y_proposed = hero.kinematics.y
+
+
+    def RegisterEntity(self, new_entity, key, counter):
         self.entitys[key] = new_entity
 
-        return new_entity
+
+
+
 
 
 

@@ -5,41 +5,41 @@ class PanningActionProcessingSystem():
         pass
 
 
-    def Trigger(self, entity, args):
+    def Trigger(self, entity, action):
 
-        if 'start' in args:
-            self.StartAction(entity, args)
+        if action['trigger'] == 'start':
+            self.StartAction(entity, action)
 
-        if 'stop' in args:
-            self.StopAction(entity, args)
+        elif action['trigger'] == 'stop':
+            self.StopAction(entity, action)
 
 
         pass
 
-    def StartAction(self, entity, args):
+    def StartAction(self, entity, action):
         entity.panning_action.status = 'active'
 
 
-        if 'left' in args:
+        if action['xdirection'] == 'left':
             entity.panning_action.xdirection = 'left'
 
-        elif 'right' in args:
+        if action['xdirection'] == 'right':
             entity.panning_action.xdirection = 'right'
 
         else:
             entity.panning_action.xdirection = 'none'
 
-        if 'down' in args:
+        if action['ydirection'] == 'down':
             entity.panning_action.ydirection = 'down'
 
-        elif 'up' in args:
+        elif action['ydirection'] == 'up':
             entity.panning_action.ydirection = 'up'
 
         else:
             entity.panning_action.ydirection = 'none'
 
 
-    def StopAction(self, entity, args):
+    def StopAction(self, entity, action):
         entity.kinematics.vx = 0
         entity.kinematics.vy = 0
         entity.panning_action.status = 'inactive'

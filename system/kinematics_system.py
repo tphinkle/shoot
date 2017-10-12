@@ -30,12 +30,7 @@ class KinematicsSystem():
 
         x_sources = self.SortXSources(entity.kinematics.x_sources)
 
-        print
-        print
-        print
-        print 'new', entity.key
-        print 'len x sources', len(x_sources)
-        print 'velocity', entity.kinematics.vx
+
 
         for x_source in x_sources:
 
@@ -53,39 +48,20 @@ class KinematicsSystem():
 
                 dvx = x_source.ax*dt
 
-                print 'asdf2!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
-                print 'ax', x_source.ax
-                print 'dvx', dvx
                 if vx + dvx < x_source.target_vx:
 
-                    print '3???'
-
-
-
-
                     dvx = x_source.target_vx - vx
-                    print 'dvx', dvx
 
-            print 'dvx', dvx
 
 
             vx += dvx
             #dvx_total += dvx
 
-        print 'dvx total', dvx_total
 
 
         #entity.kinematics.vx = vx + dvx_total
         entity.kinematics.vx = vx
         entity.kinematics.x_sources = []
-
-        print 'vx', entity.kinematics.vx
-
-
-
-
-
-
 
         vy = entity.kinematics.vy
 

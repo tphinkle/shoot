@@ -33,16 +33,25 @@ import controller_input_system
 import ai_system
 import actions_processing_system
 
+
+import factory_system
+
+
+
 import friction_system
-import kinematics_system
 import gravity_system
+import kinematics_system
+import tilemap_collision_system
+
+
+
 
 
 import status_processing_system
 
 
 
-import tilemap_collision_system
+
 
 
 
@@ -108,6 +117,11 @@ class System:
 
         self.tile_modifier_system = tile_modifier_system.TileModifierSystem()
 
+
+        self.factory_system = factory_system.FactorySystem()
+
+
+
         self.kinematics_system = kinematics_system.KinematicsSystem()
 
 
@@ -154,34 +168,36 @@ class System:
             # Game
             if self.game_timer.Update():
 
-                print 'new game loop update'
 
 
-                inputs = self.GetInputs()
-                self.controller_input_system.HandleInputEventDriven(self.joystick, inputs, self.world)
-                self.ai_system.ProcessAI(self.world)
 
 
 
                 self.tile_modifier_system.ProcessTileModifiers(self.world)
 
+
+
+                # Action related
+                inputs = self.GetInputs()
+                self.controller_input_system.HandleInputEventDriven(self.joystick, inputs, self.world)
+                self.ai_system.ProcessAI(self.world)
                 self.actions_processing_system.ProcessActions(self.world, self.game_timer.dt)
 
 
 
+
+
+                # Entity creation related
+                self.factory_system.ProcessOrders(self.world)
+
+
+
+
+                # Movement related
                 self.gravity_system.ProcessGravity(self.world)
-
-
-
                 self.friction_system.ProcessFriction(self.world)
-
                 self.kinematics_system.UpdateKinematics(self.world, self.game_timer.dt)
-
-
-
                 self.tilemap_collision_system.ProcessTilemapCollisions(self.world)
-
-
                 self.kinematics_system.ValidatePosition(self.world)
 
 
