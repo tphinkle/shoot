@@ -10,23 +10,24 @@ class FactorySystem():
                 for order in entity.factory.orders:
 
                     # Get entity name and args
-                    entity_name = order[0]
-                    args = order[1]
+                    entity_name = order.name
 
-                    # Parse arguments
-                    self.ParseArguments(args)
+
+                    # Parse sepcifications
+                    specifications = order.specifications
+                    parsed_specificaitons = self.ParseSpecifications(entity, specifications)
+
 
                     # Order entity
+                    world.entity_manager.CreateEntity(entity_name, parsed_specifications)
 
 
-
-
-                    # Increment number of entitys out for factory entity
+                    # Increment number of entitys out for factory
 
                     # Attach function to on_death that will decrement upon death
-                    #entity_manager.CreateOrder()
 
 
-    def ParseArguments(self, args):
-        # Position
-        args['x_offset']
+
+
+    def ParseSpecifications(self, entity, specifications):
+        

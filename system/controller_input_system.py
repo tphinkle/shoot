@@ -39,7 +39,6 @@ class ControllerInputSystem:
 
                     # Button pressed
                     if (input.type == sdl2.SDL_JOYBUTTONDOWN):
-                        print input.jbutton.button
 
                         if input.jbutton.button == 0:
                             buttons.append('A_Press')

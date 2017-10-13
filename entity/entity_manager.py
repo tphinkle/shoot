@@ -35,35 +35,30 @@ import friction_component
 import sound_component
 import shooting_action_component
 
-
-
-
 # SDL
 import sdl2
 
 
-def instance_counter(**kwargs):
-    def decorate(func):
-        for kwarg in kwargs:
-            setattr(func, kwarg, kwargs[kwarg])
-        return func
-    return decorate
 
 
 
 class EntityManager():
     def __init__(self):
         self.entitys = {}
+
+        self.entity_creation_routines = {}
+        self.entity_creation_routines['hero'] = self.CreateHero
+        self.entity_creation_routines['camera'] = self.CreateCamera
+        self.entity_creation_routines['buster_shot'] = self.CreateBusterShot
+
+
         pass
 
 
-    @instance_counter(counter = 0)
-    def CreateHero(self):
-        counter = 0
+    def CreateHero(self, args):
 
         key = 'hero'
         hero = entity.Entity(key)
-        self.RegisterEntity(hero, key, counter)
 
         # Display
         hero.display = display_component.DisplayComponent(b'/home/prestonh/Desktop/Programming/gamedev/shoot/shoot/resources/X.png')
@@ -238,15 +233,14 @@ class EntityManager():
         hero.sprite_animation.default_animation = default_animation
         hero.sprite_animation.active_animation = default_animation
 
+        return hero
 
-    @instance_counter(counter = 0)
-    def CreateCamera(self):
-        counter = 0
+
+    def CreateCamera(self, args):
 
         # Create and register
         key = 'camera'
         camera = entity.Entity(key)
-        self.RegisterEntity(camera, key, counter)
 
         # Position
         camera.kinematics = kinematics_component.KinematicsComponent()
@@ -285,10 +279,7 @@ class EntityManager():
 
 
 
-    @instance_counter(counter = 0)
-    def CreateBusterShot(self, args):
-        counter = 0
-
+    def CreateBusterShot(self, x, y, direction):
 
         # Create and register
         key = 'buster_shot'
@@ -306,14 +297,34 @@ class EntityManager():
         buster_shot.shape.h = 6
 
         # Kinematics
-        hero.kinematics = kinematics_component.KinematicsComponent()
-        hero.kinematics.x = 600
-        hero.kinematics.y = 800
-        hero.kinematics.x_proposed = hero.kinematics.x
-        hero.kinematics.y_proposed = hero.kinematics.y
+        buster_shot.kinematics = kinematics_component.KinematicsComponent()
+        buster_shot.kinematics.x = x
+        buster_shot.kinematics.y = y
+        buster_shot.kinematics.vx = (direction=='left')*-100 + (direction=='right')*100
+        buster_shot.kinematics.vy = 0
+
+        # Orientation
+        buster_shot.orientation = orientation_component.OrientationComponent()
+        buster_shot.orientation.direction = direction
 
 
-    def RegisterEntity(self, new_entity, key, counter):
+        # Add additional arguments
+        for key, value in kwargs.iteritems():
+            setattr(buster_shot, key, value)
+
+        return buster_shot
+
+
+    def CreateEntity(self, entity_name, args = None):
+        print 'entity name = ', entity_name
+
+        entity = self.entity_creation_routines[entity_name](args)
+
+        self.RegisterEntity(entity)
+
+
+    def RegisterEntity(self, new_entity):
+        key = new_entity.key
         self.entitys[key] = new_entity
 
 

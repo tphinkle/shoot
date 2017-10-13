@@ -28,6 +28,7 @@ class ShootingActionProcessingSystem(object):
         # Start
         if action['trigger'] == 'start':
 
+
             # Check cooldown
             if gun.cooldown_timer >= gun.cooldown:
 
@@ -64,11 +65,17 @@ class ShootingActionProcessingSystem(object):
 
     def FireGun(self, entity, gun):
         bullet_name = gun.bullet_name
-        args = {}
-        args['x_offset'] = gun.x_offset
-        args['y_offset'] = gun.y_offset
-        args['direction'] = entity.orientation.facing
-        entity.factory.orders.append((bullet_name, args))
+
+        bullet_specifications = {}
+        bullet_specifications['x_offset'] = gun.x_offset
+        bullet_specifications['y_offset'] = gun.y_offset
+        bullet_specifications['direction'] = entity.orientation.facing
+
+
+        order = factory_component.order(bullet_name, bullet_specifications)
+
+
+        entity.factory.orders.append(order)
 
 
 

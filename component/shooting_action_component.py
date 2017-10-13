@@ -9,10 +9,10 @@ class Gun(object):
         self.bullets_out = 0
         self.cooldown = 0
         self.cooldown_timer = 0
-        self.bullet_type = None
+        self.bullet_name = None
         self.status = 'inactive'
 
-        self.x_offset = 0 
+        self.x_offset = 0
         self.y_offset = 0
 
 
