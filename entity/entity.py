@@ -1,7 +1,14 @@
 class Entity():
-    def __init__(self, key):
+    def __init__(self, type):
         # Initialize all components None
-        self.key = key
+        self.type = type
+        
+        self.key = None
+
+
+
+
+
         self.display = None
         self.sprite_animation = None
         self.kinematics = None

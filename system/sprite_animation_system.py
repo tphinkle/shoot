@@ -3,9 +3,9 @@ class SpriteAnimationSystem():
         pass
 
     def UpdateEntitySprites(self, world, dt):
-        for key, entity in world.entity_manager.entitys.iteritems():
+        for key, entity in world.entity_manager.entities.iteritems():
             if entity.sprite_animation:
-                if key == 'hero':
+                if key == 'hero_0':
                     self.UpdateHeroSprite(entity, dt)
 
 
@@ -86,7 +86,7 @@ class SpriteAnimationSystem():
         elif hero.jumping_action.status == 'active':
             self.SetEntitySpriteAnimation(hero, 'jumping', dt)
 
-        
+
 
 
 

@@ -1,3 +1,10 @@
+# Python standard library
+import sys
+
+# Game specific
+sys.path.append('../component/')
+import factory_component
+
 class ShootingActionProcessingSystem(object):
 
 
@@ -30,7 +37,7 @@ class ShootingActionProcessingSystem(object):
 
 
             # Check cooldown
-            if gun.cooldown_timer >= gun.cooldown:
+            if gun.cooldown_timer >= gun.cooldown and gun.bullets_out < gun.max_bullets_out:
 
                 # Fire gun
                 self.FireGun(entity, gun)
@@ -66,33 +73,51 @@ class ShootingActionProcessingSystem(object):
     def FireGun(self, entity, gun):
         bullet_name = gun.bullet_name
 
-        bullet_specifications = {}
-        bullet_specifications['x_offset'] = gun.x_offset
-        bullet_specifications['y_offset'] = gun.y_offset
-        bullet_specifications['direction'] = entity.orientation.facing
+
+        def on_creation(new_bullet):
 
 
-        order = factory_component.order(bullet_name, bullet_specifications)
+            # Set orientation
+            new_bullet.orientation.xorientation = entity.orientation.xorientation
 
 
+            # Set x
+            if new_bullet.orientation.xorientation == 'right':
+                new_bullet.kinematics.x = entity.kinematics.x + gun.x_offset
+
+
+            elif new_bullet.orientation.xorientation == 'left':
+
+                new_bullet.kinematics.x = entity.kinematics.x + entity.shape.w - gun.x_offset - new_bullet.shape.w
+
+            new_bullet.kinematics.x_proposed = new_bullet.kinematics.x
+
+            # Set y
+            new_bullet.kinematics.y = entity.kinematics.y + gun.y_offset
+            new_bullet.kinematics.y_proposed = new_bullet.kinematics.y
+
+
+            # Set direction and velocity
+            new_bullet.kinematics.vx = 256
+            if new_bullet.orientation.xorientation == 'left':
+                new_bullet.kinematics.vx *= -1
+
+            new_bullet.kinematics.vy = 0
+
+            # Increase max bullets
+            gun.bullets_out += 1
+
+
+
+        # Create order and send to factory
+        order = factory_component.Order(bullet_name, on_creation)
         entity.factory.orders.append(order)
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
     def ProcessAction(self, world, dt):
-        for key, entity in world.entity_manager.entitys.iteritems():
+        for key, entity in world.entity_manager.entities.iteritems():
             if entity.shooting_action != None:
                 for name, gun in entity.shooting_action.guns.iteritems():
 

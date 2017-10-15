@@ -33,11 +33,10 @@ class TilemapCollisionSystem():
         '''
 
         tilemap = world.room.tilemap
-        for key, entity in world.entity_manager.entitys.iteritems():
+        for key, entity in world.entity_manager.entities.iteritems():
             if entity.tilemap_collidable != None:
 
                 # X
-
                 if entity.kinematics.vx < 0:
                     self.HandleLeftCollision(entity, tilemap)
 
@@ -46,7 +45,6 @@ class TilemapCollisionSystem():
                     self.HandleRightCollision(entity, tilemap)
 
                 # Y
-
                 if entity.kinematics.vy == 0:
                     self.ResolveRamp(entity, tilemap)
 
@@ -58,7 +56,8 @@ class TilemapCollisionSystem():
                     self.HandleTopCollision(entity, tilemap)
 #                    self.ResolveRamp(entity, tilemap)
 
-                self.CheckGrounded(entity, tilemap)
+                if entity.gravity:
+                    self.CheckGrounded(entity, tilemap)
 
 
 
@@ -139,7 +138,8 @@ class TilemapCollisionSystem():
         if tile.type == 'solid':
             entity.kinematics.y_proposed = entity.kinematics.y_proposed-(bottom_y%16+1)
             entity.kinematics.vy = 0
-            entity.gravity.grounded = True
+            if entity.gravity:
+                entity.gravity.grounded = True
 
 
         bottomcenter_pixel = coord_transforms.GetEntityBottomCenterPixel(entity)
@@ -156,7 +156,8 @@ class TilemapCollisionSystem():
             floor_y = tile.a + (center_x%16)*(tile.b-tile.a)/16.
             entity.kinematics.y_proposed = entity.kinematics.y_proposed - (bottom_y%16 - floor_y)
             entity.kinematics.vy = 0
-            entity.gravity.grounded = True
+            if entity.gravity:
+                entity.gravity.grounded = True
 
 
     def HandleBottomCollision(self, entity, tilemap):

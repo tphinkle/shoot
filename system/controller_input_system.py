@@ -25,7 +25,7 @@ class ControllerInputSystem:
         #self.UpdateJoystick(joystick)
         self.UpdateDPad(joystick)
 
-        for key, entity in world.entity_manager.entitys.iteritems():
+        for key, entity in world.entity_manager.entities.iteritems():
             if entity.controller_input != None:
                 buttons = []
 

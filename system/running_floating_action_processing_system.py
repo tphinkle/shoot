@@ -42,7 +42,7 @@ class RunningFloatingActionProcessingSystem():
 
 
     def ProcessAction(self, world, dt):
-        for key, entity in world.entity_manager.entitys.iteritems():
+        for key, entity in world.entity_manager.entities.iteritems():
             if entity.running_floating_action:
 
                 # Active
@@ -89,7 +89,7 @@ class RunningFloatingActionProcessingSystem():
     def RunLeft(self, entity):
         # Change orientation
         if entity.orientation:
-            entity.orientation.facing = 'left'
+            entity.orientation.xorientation = 'left'
 
 
         # Entity is moving left faster than running speed
@@ -111,7 +111,7 @@ class RunningFloatingActionProcessingSystem():
 
     def RunRight(self, entity):
         if entity.orientation:
-            entity.orientation.facing = 'right'
+            entity.orientation.xorientation = 'right'
 
         if entity.kinematics.vx > entity.running_floating_action.running_speed():
             return
@@ -139,7 +139,7 @@ class RunningFloatingActionProcessingSystem():
         if entity.running_floating_action.direction == 'left':
 
             if entity.orientation:
-                entity.orientation.facing = 'left'
+                entity.orientation.xorientation = 'left'
 
             if entity.kinematics.vx < -entity.running_floating_action.running_speed():
                 return
@@ -163,7 +163,7 @@ class RunningFloatingActionProcessingSystem():
         if entity.running_floating_action.direction == 'right':
 
             if entity.orientation:
-                entity.orientation.facing = 'right'
+                entity.orientation.xorientation = 'right'
 
             if entity.kinematics.vx > entity.running_floating_action.running_speed():
                 return

@@ -138,8 +138,6 @@ class System:
 
 
 
-
-
     def LoadGame(self):
         self.world.LoadGame()
 
@@ -204,12 +202,16 @@ class System:
                 self.status_processing_system.ProcessStatusEffects(self.world)
 
 
+                self.world.entity_manager.RegisterNewEntities()
+
+
+
 
 
             # Render
             if self.render_timer.Update():
                 self.sprite_animation_system.UpdateEntitySprites(self.world, self.render_timer.dt)
-                self.render_system.RenderAll(self.world)
+                self.render_system.RenderAll(self.world, self.render_timer.dt)
 
 
 

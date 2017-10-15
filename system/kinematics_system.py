@@ -12,9 +12,8 @@ class KinematicsSystem():
 
 
     def UpdateKinematics(self, world, dt):
-        for key, entity in world.entity_manager.entitys.iteritems():
+        for key, entity in world.entity_manager.entities.iteritems():
             if entity.kinematics != None:
-
 
                 self.UpdateVelocity(entity, dt)
                 self.UpdateProposedPosition(entity, dt)
@@ -116,8 +115,9 @@ class KinematicsSystem():
 
 
 
+
     def ValidatePosition(self, world):
-        for key, entity in world.entity_manager.entitys.iteritems():
+        for key, entity in world.entity_manager.entities.iteritems():
             if entity.kinematics != None:
                 entity.kinematics.x = entity.kinematics.x_proposed
                 entity.kinematics.y = entity.kinematics.y_proposed

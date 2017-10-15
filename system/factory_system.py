@@ -1,9 +1,10 @@
 class FactorySystem():
     def __init__(self):
+
         pass
 
     def ProcessOrders(self, world):
-        for key, entity in world.entity_manager.entitys.iteritems():
+        for key, entity in world.entity_manager.entities.iteritems():
 
             if entity.factory != None:
                 # Create orders
@@ -14,20 +15,18 @@ class FactorySystem():
 
 
                     # Parse sepcifications
-                    specifications = order.specifications
-                    parsed_specificaitons = self.ParseSpecifications(entity, specifications)
-
+                    on_creation = order.on_creation
 
                     # Order entity
-                    world.entity_manager.CreateEntity(entity_name, parsed_specifications)
+                    new_entity = world.entity_manager.CreateEntity(entity_name)
 
+                    # Attach components
+                    on_creation(new_entity)
 
-                    # Increment number of entitys out for factory
+                    # Increment number of entities out for factory
+                    entity.factory.num_products += 1
+
 
                     # Attach function to on_death that will decrement upon death
 
-
-
-
-    def ParseSpecifications(self, entity, specifications):
-        
+                entity.factory.orders = []

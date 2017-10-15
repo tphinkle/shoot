@@ -27,11 +27,11 @@ class DashingActionProcessingSystem(object):
     def StartAction(self, entity, action):
         entity.dashing_action.status = 'active'
 
-        if entity.orientation.facing == 'left':
+        if entity.orientation.xorientation == 'left':
             entity.dashing_action.direction = 'left'
 
 
-        elif entity.orientation.facing == 'right':
+        elif entity.orientation.xorientation == 'right':
             entity.dashing_action.direction = 'right'
 
 
@@ -45,7 +45,7 @@ class DashingActionProcessingSystem(object):
 
 
     def ProcessAction(self, world, dt):
-        for key, entity in world.entity_manager.entitys.iteritems():
+        for key, entity in world.entity_manager.entities.iteritems():
             if entity.dashing_action:
 
 

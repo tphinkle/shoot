@@ -13,7 +13,7 @@ class AISystem():
 
 
     def ProcessAI(self, world):
-        for key, entity in world.entity_manager.entitys.iteritems():
+        for key, entity in world.entity_manager.entities.iteritems():
             if entity.ai != None:
                 for behavior in entity.ai.behaviors:
                     self.ai_map[behavior](entity, world)

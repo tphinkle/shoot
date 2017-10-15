@@ -18,7 +18,7 @@ class GravitySystem():
 
 
     def ProcessGravity(self, world):
-        for key, entity in world.entity_manager.entitys.iteritems():
+        for key, entity in world.entity_manager.entities.iteritems():
             if entity.gravity != None:
 
                 entity.grounded = tile_functions.CheckEntityGrounded(world, entity)

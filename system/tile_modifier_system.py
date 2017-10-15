@@ -17,7 +17,7 @@ class TileModifierSystem:
         pass
 
     def ProcessTileModifiers(self, world):
-        for key, entity in world.entity_manager.entitys.iteritems():
+        for key, entity in world.entity_manager.entities.iteritems():
 
 
             # Check ground tile interactions

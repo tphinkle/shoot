@@ -67,7 +67,7 @@ class ActionsProcessingSystem():
     def ProcessActions(self, world, dt):
 
         # Trigger actions
-        for key, entity in world.entity_manager.entitys.iteritems():
+        for key, entity in world.entity_manager.entities.iteritems():
             # Process entity actions
             if entity.actions != None:
                 for action in entity.actions.proposed_actions:

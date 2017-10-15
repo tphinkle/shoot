@@ -3,4 +3,5 @@ class OrientationComponent():
 
 
         # Change this to 'direction' at some point, or 'alignment', or 'polarity'
-        self.facing = 'right'
+        self.xorientation = 'right'
+        self.yorientation = 'up'

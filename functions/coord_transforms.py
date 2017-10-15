@@ -1,4 +1,4 @@
-
+# Adjacent
 
 def GetEntityAdjLeftX(entity):
     return entity.kinematics.x - 1

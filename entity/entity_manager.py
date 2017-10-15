@@ -44,7 +44,9 @@ import sdl2
 
 class EntityManager():
     def __init__(self):
-        self.entitys = {}
+        self.new_entities = []
+        self.entities = {}
+        self.entity_counts = {}
 
         self.entity_creation_routines = {}
         self.entity_creation_routines['hero'] = self.CreateHero
@@ -55,10 +57,10 @@ class EntityManager():
         pass
 
 
-    def CreateHero(self, args):
+    def CreateHero(self):
 
-        key = 'hero'
-        hero = entity.Entity(key)
+        type = 'hero'
+        hero = entity.Entity(type)
 
         # Display
         hero.display = display_component.DisplayComponent(b'/home/prestonh/Desktop/Programming/gamedev/shoot/shoot/resources/X.png')
@@ -103,22 +105,30 @@ class EntityManager():
         # Shooting action
         hero.shooting_action = shooting_action_component.ShootingActionComponent()
 
-        # Create weapons
+        # Buster gun
         buster = shooting_action_component.NormalGun()
-        hero.shooting_action.guns['buster'] = buster
+        buster.name = 'buster'
+        buster.max_bullets_out = 100
+        buster.owner = hero
+        buster.cooldown_timer = 1
+        buster.bullet_name = 'buster_shot'
+        buster.x_offset = 22
+        buster.y_offset = 16
+        hero.shooting_action.AttachGun(buster)
 
+
+        # Charge buster gun
         charge_buster = shooting_action_component.ChargeGun()
-        hero.shooting_action.guns['charge_buster'] = charge_buster
+        charge_buster.name = 'charge_buster'
+        charge_buster.max_bullets_out = 3
+        charge_buster.owner = hero
+        charge_buster.cooldown = 5
+        charge_buster.bullet_names = ['charge_buster_shot_lite', 'charge_buster_shot_medium', 'charge_buster_shot_heavy']
+        charge_buster.x_offset = 22
+        charge_buster.y_offset = 16
+        hero.shooting_action.AttachGun(charge_buster)
 
 
-
-
-        # Shooting action
-        hero.buster_shooting_action = shooting_action_component.ShootingActionComponent()
-        hero.buster_shooting_action.max_bullets = 3
-        hero.buster_shooting_action.cooldown = 2
-        hero.buster_shooting_action.bullet = 'BusterShot'
-        hero.buster_shooting_action.timer = 0
 
         # Gravity
         hero.gravity = gravity_component.GravityComponent()
@@ -174,6 +184,34 @@ class EntityManager():
         running_animation.total_frames = len(running_animation.rects)
         running_animation.type = 'cyclical'
         hero.sprite_animation.animations.append(running_animation)
+
+        shooting_animation = sprite_animation_component.Animation('shooting')
+        shooting_animation.rects = [sdl2.SDL_Rect(6, 167, 30, 34),
+        sdl2.SDL_Rect(41, 167, 29, 33)]
+
+        shooting_animation.clock = 0.
+        shooting_animation.period = .05
+        shooting_animation.total_frames = len(shooting_animation.rects)
+        shooting_animation.type = 'terminating'
+        hero.sprite_animation.animations.append(shooting_animation)
+
+
+        running_shooting_animation = sprite_animation_component.Animation('running_shooting')
+        running_shooting_animation.rects = [sdl2.SDL_Rect(290, 71, 29, 34),
+		sdl2.SDL_Rect(319, 70, 32, 35),
+		sdl2.SDL_Rect(351, 71, 35, 34),
+		sdl2.SDL_Rect(387, 72, 38, 33),
+		sdl2.SDL_Rect(426, 72, 34, 33),
+		sdl2.SDL_Rect(460, 71, 31, 34),
+		sdl2.SDL_Rect(491, 70, 33, 35),
+		sdl2.SDL_Rect(524, 71, 35, 34),
+		sdl2.SDL_Rect(560, 72, 37, 33),
+		sdl2.SDL_Rect(597, 72, 35, 33)]
+        running_shooting_animation.clock = 0.
+        running_shooting_animation.period = .05
+        running_shooting_animation.total_frames = len(running_animation.rects)
+        running_shooting_animation.type = 'cyclical'
+        hero.sprite_animation.animations.append(running_shooting_animation)
 
 
         floating_animation = sprite_animation_component.Animation('floating')
@@ -236,16 +274,16 @@ class EntityManager():
         return hero
 
 
-    def CreateCamera(self, args):
+    def CreateCamera(self):
 
-        # Create and register
-        key = 'camera'
-        camera = entity.Entity(key)
+        # Create
+        type = 'camera'
+        camera = entity.Entity(type)
 
         # Position
         camera.kinematics = kinematics_component.KinematicsComponent()
-        camera.kinematics.x = self.entitys['hero'].kinematics.x
-        camera.kinematics.y = self.entitys['hero'].kinematics.y
+        camera.kinematics.x = self.entities['hero_0'].kinematics.x
+        camera.kinematics.y = self.entities['hero_0'].kinematics.y
 
         camera.kinematics.x_proposed = camera.kinematics.x
         camera.kinematics.y_proposed = camera.kinematics.y
@@ -270,7 +308,7 @@ class EntityManager():
         camera.ai.behaviors.append('following')
 
         # Following
-        camera.following_ai = following_ai_component.FollowingAIComponent(self.entitys['hero'])
+        camera.following_ai = following_ai_component.FollowingAIComponent(self.entities['hero_0'])
         camera.following_ai.xlag = camera.shape.w/3.
         camera.following_ai.ylag = camera.shape.h/3.
 
@@ -279,12 +317,12 @@ class EntityManager():
 
 
 
-    def CreateBusterShot(self, x, y, direction):
+    def CreateBusterShot(self):
 
-        # Create and register
-        key = 'buster_shot'
-        buster_shot = entity.Entity(key)
-        self.RegisterEntity(buster_shot, key, counter)
+
+        # Create
+        type = 'buster_shot'
+        buster_shot = entity.Entity(type)
 
         # Display
         buster_shot.display = display_component.DisplayComponent(b'/home/prestonh/Desktop/Programming/gamedev/shoot/shoot/resources/X.png')
@@ -298,34 +336,76 @@ class EntityManager():
 
         # Kinematics
         buster_shot.kinematics = kinematics_component.KinematicsComponent()
-        buster_shot.kinematics.x = x
-        buster_shot.kinematics.y = y
-        buster_shot.kinematics.vx = (direction=='left')*-100 + (direction=='right')*100
         buster_shot.kinematics.vy = 0
 
         # Orientation
         buster_shot.orientation = orientation_component.OrientationComponent()
-        buster_shot.orientation.direction = direction
 
-
-        # Add additional arguments
-        for key, value in kwargs.iteritems():
-            setattr(buster_shot, key, value)
+        # Tilemap collidable component
+        buster_shot.tilemap_collidable = tilemap_collidable_component.TilemapCollidableComponent()
 
         return buster_shot
 
 
-    def CreateEntity(self, entity_name, args = None):
-        print 'entity name = ', entity_name
+    def CreateEntity(self, entity_name, creation_time = 'end_of_update'):
+        '''
+        creation_time arg is a hack that was put together; hte error was cuased when
+        a new entity was added in the middle of iterating over the entities dict in some subsystem
+        e.g. when creating a bullet, new bullet is added
+        we defer creation of new entity until end of loop
+        but, this is a problem with camera which must be immediately attached to an entity on creation;
+        this is a hack to fix that issue
+        we should have better creation routines for the camera
+        '''
 
-        entity = self.entity_creation_routines[entity_name](args)
 
-        self.RegisterEntity(entity)
+        entity = self.entity_creation_routines[entity_name]()
+
+        if creation_time == 'end_of_update':
+            self.QueueNewEntity(entity)
+
+        elif creation_time == 'instant':
+            self.RegisterEntity(entity)
+
+        return entity
+
+
+    def QueueNewEntity(self, entity):
+        self.new_entities.append(entity)
+
+    def RegisterNewEntities(self):
+        for new_entity in self.new_entities:
+            self.RegisterEntity(new_entity)
+
+        self.new_entities = []
 
 
     def RegisterEntity(self, new_entity):
-        key = new_entity.key
-        self.entitys[key] = new_entity
+
+
+        type = new_entity.type
+        key = self.GenerateKey(type)
+        new_entity.key = key
+
+        print new_entity.type, new_entity.key
+
+
+
+        self.entities[type + '_' + key] = new_entity
+
+    def GenerateKey(self, entity_type):
+        if entity_type not in self.entity_counts.keys():
+            self.entity_counts[entity_type] = 0
+
+        elif entity_type in self.entity_counts.keys():
+            self.entity_counts[entity_type] += 1
+
+        key = str(self.entity_counts[entity_type])
+
+        return key
+
+
+
 
 
 

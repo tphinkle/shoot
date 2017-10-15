@@ -49,7 +49,7 @@ class PanningActionProcessingSystem():
 
 
     def ProcessAction(self, world, dt):
-        for key, entity in world.entity_manager.entitys.iteritems():
+        for key, entity in world.entity_manager.entities.iteritems():
             if entity.panning_action:
 
                 # Active

@@ -17,8 +17,8 @@ class World():
 
         self.room = room.Prototype2Room()
 
-        self.entity_manager.CreateEntity('hero')
-        self.entity_manager.CreateEntity('camera')
+        self.entity_manager.CreateEntity('hero', creation_time = 'instant')
+        self.entity_manager.CreateEntity('camera', creation_time = 'instant')
 
 
         pass
