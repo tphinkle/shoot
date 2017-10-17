@@ -2,7 +2,7 @@ class Entity():
     def __init__(self, type):
         # Initialize all components None
         self.type = type
-        
+        self.id = None
         self.key = None
 
 

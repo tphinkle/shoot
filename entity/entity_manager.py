@@ -34,6 +34,7 @@ import sprite_animation_component
 import friction_component
 import sound_component
 import shooting_action_component
+import on_clear_component
 
 # SDL
 import sdl2
@@ -45,6 +46,7 @@ import sdl2
 class EntityManager():
     def __init__(self):
         self.new_entities = []
+        self.remove_entities = []
         self.entities = {}
         self.entity_counts = {}
 
@@ -52,6 +54,9 @@ class EntityManager():
         self.entity_creation_routines['hero'] = self.CreateHero
         self.entity_creation_routines['camera'] = self.CreateCamera
         self.entity_creation_routines['buster_shot'] = self.CreateBusterShot
+        self.entity_creation_routines['charge_buster_shot_lite'] = self.CreateChargeBusterShotLite
+        self.entity_creation_routines['charge_buster_shot_medium'] = self.CreateChargeBusterShotMedium
+        self.entity_creation_routines['charge_buster_shot_heavy'] = self.CreateChargeBusterShotHeavy
 
 
         pass
@@ -77,8 +82,6 @@ class EntityManager():
         hero.kinematics.y = 800
         hero.kinematics.x_proposed = hero.kinematics.x
         hero.kinematics.y_proposed = hero.kinematics.y
-
-
 
 
 
@@ -108,7 +111,7 @@ class EntityManager():
         # Buster gun
         buster = shooting_action_component.NormalGun()
         buster.name = 'buster'
-        buster.max_bullets_out = 100
+        buster.max_bullets_out = 3
         buster.owner = hero
         buster.cooldown_timer = 1
         buster.bullet_name = 'buster_shot'
@@ -122,7 +125,8 @@ class EntityManager():
         charge_buster.name = 'charge_buster'
         charge_buster.max_bullets_out = 3
         charge_buster.owner = hero
-        charge_buster.cooldown = 5
+        charge_buster.cooldown = 0.5
+        charge_buster.charge_times = [0.5, 1, 1.5]
         charge_buster.bullet_names = ['charge_buster_shot_lite', 'charge_buster_shot_medium', 'charge_buster_shot_heavy']
         charge_buster.x_offset = 22
         charge_buster.y_offset = 16
@@ -149,6 +153,7 @@ class EntityManager():
 
         # Tilemap collidable component
         hero.tilemap_collidable = tilemap_collidable_component.TilemapCollidableComponent()
+        hero.tilemap_collidable.death_on_collision = False
 
         # Orientation
         hero.orientation = orientation_component.OrientationComponent()
@@ -343,6 +348,133 @@ class EntityManager():
 
         # Tilemap collidable component
         buster_shot.tilemap_collidable = tilemap_collidable_component.TilemapCollidableComponent()
+        buster_shot.tilemap_collidable.death_on_collision = True
+
+        # Status
+        buster_shot.status = status_component.StatusComponent()
+        buster_shot.status.hp = 1
+        buster_shot.status.dead = False
+
+        # On clear
+        buster_shot.on_clear = on_clear_component.OnClearComponent()
+
+
+        return buster_shot
+
+    def CreateChargeBusterShotLite(self):
+
+
+        # Create
+        type = 'charge_buster_shot_lite'
+        buster_shot = entity.Entity(type)
+
+        # Display
+        buster_shot.display = display_component.DisplayComponent(b'/home/prestonh/Desktop/Programming/gamedev/shoot/shoot/resources/X.png')
+        buster_shot.display.source_rect = sdl2.SDL_Rect(163, 374, 38, 12)
+        buster_shot.display.z = 1
+
+        # Shape
+        buster_shot.shape = shape_component.ShapeComponent()
+        buster_shot.shape.w = 8
+        buster_shot.shape.h = 6
+
+        # Kinematics
+        buster_shot.kinematics = kinematics_component.KinematicsComponent()
+        buster_shot.kinematics.vy = 0
+
+        # Orientation
+        buster_shot.orientation = orientation_component.OrientationComponent()
+
+        # Tilemap collidable component
+        buster_shot.tilemap_collidable = tilemap_collidable_component.TilemapCollidableComponent()
+        buster_shot.tilemap_collidable.death_on_collision = True
+
+        # Status
+        buster_shot.status = status_component.StatusComponent()
+        buster_shot.status.hp = 1
+        buster_shot.status.dead = False
+
+        # On clear
+        buster_shot.on_clear = on_clear_component.OnClearComponent()
+
+
+        return buster_shot
+
+    def CreateChargeBusterShotMedium(self):
+
+
+        # Create
+        type = 'charge_buster_shot_medium'
+        buster_shot = entity.Entity(type)
+
+        # Display
+        buster_shot.display = display_component.DisplayComponent(b'/home/prestonh/Desktop/Programming/gamedev/shoot/shoot/resources/X.png')
+        buster_shot.display.source_rect = sdl2.SDL_Rect(62, 407, 27, 24)
+        buster_shot.display.z = 1
+
+        # Shape
+        buster_shot.shape = shape_component.ShapeComponent()
+        buster_shot.shape.w = 8
+        buster_shot.shape.h = 6
+
+        # Kinematics
+        buster_shot.kinematics = kinematics_component.KinematicsComponent()
+        buster_shot.kinematics.vy = 0
+
+        # Orientation
+        buster_shot.orientation = orientation_component.OrientationComponent()
+
+        # Tilemap collidable component
+        buster_shot.tilemap_collidable = tilemap_collidable_component.TilemapCollidableComponent()
+        buster_shot.tilemap_collidable.death_on_collision = True
+
+        # Status
+        buster_shot.status = status_component.StatusComponent()
+        buster_shot.status.hp = 1
+        buster_shot.status.dead = False
+
+        # On clear
+        buster_shot.on_clear = on_clear_component.OnClearComponent()
+
+
+        return buster_shot
+
+    def CreateChargeBusterShotHeavy(self):
+
+
+        # Create
+        type = 'charge_buster_shot_heavy'
+        buster_shot = entity.Entity(type)
+
+        # Display
+        buster_shot.display = display_component.DisplayComponent(b'/home/prestonh/Desktop/Programming/gamedev/shoot/shoot/resources/X.png')
+        buster_shot.display.source_rect = sdl2.SDL_Rect(35, 496, 46, 31)
+        buster_shot.display.z = 1
+
+        # Shape
+        buster_shot.shape = shape_component.ShapeComponent()
+        buster_shot.shape.w = 8
+        buster_shot.shape.h = 6
+
+        # Kinematics
+        buster_shot.kinematics = kinematics_component.KinematicsComponent()
+        buster_shot.kinematics.vy = 0
+
+        # Orientation
+        buster_shot.orientation = orientation_component.OrientationComponent()
+
+        # Tilemap collidable component
+        buster_shot.tilemap_collidable = tilemap_collidable_component.TilemapCollidableComponent()
+        buster_shot.tilemap_collidable.death_on_collision = True
+
+        # Status
+        buster_shot.status = status_component.StatusComponent()
+        buster_shot.status.hp = 1
+        buster_shot.status.dead = False
+
+        # On clear
+        buster_shot.on_clear = on_clear_component.OnClearComponent()
+
 
         return buster_shot
 
@@ -369,6 +501,9 @@ class EntityManager():
 
         return entity
 
+    '''
+    Creation routines
+    '''
 
     def QueueNewEntity(self, entity):
         self.new_entities.append(entity)
@@ -382,36 +517,62 @@ class EntityManager():
 
     def RegisterEntity(self, new_entity):
 
-
         type = new_entity.type
-        key = self.GenerateKey(type)
+        id = self.GenerateID(type)
+        key = type + '_' + id
+
+        new_entity.id = id
         new_entity.key = key
 
-        print new_entity.type, new_entity.key
 
+        self.entities[key] = new_entity
 
-
-        self.entities[type + '_' + key] = new_entity
-
-    def GenerateKey(self, entity_type):
+    def GenerateID(self, entity_type):
         if entity_type not in self.entity_counts.keys():
             self.entity_counts[entity_type] = 0
 
         elif entity_type in self.entity_counts.keys():
             self.entity_counts[entity_type] += 1
 
-        key = str(self.entity_counts[entity_type])
+        id = str(self.entity_counts[entity_type])
 
-        return key
-
-
+        return id
 
 
 
 
+    '''
+    Destruction routines
+    '''
+
+
+    # Clean this code up
+    # It works for entities that die from lack of HP
+    # It needs to be extended for cleaning up entities that need to be removed
+    # for other reasons, e.g. moving to a new room should clean up some entities
+    # Right now this code needs to be modified when we add in that type of clean up
+    # routine
+
+    def CleanUpDeadEntities(self):
+        for key, entity in self.entities.iteritems():
+            if entity.status:
+                if entity.status.hp == -1:
+                    self.remove_entities.append(entity)
+
+        for entity in self.remove_entities:
+            self.RemoveEntity(entity)
+
+        self.remove_entities = []
 
 
 
+    def RemoveEntity(self, entity):
+        # Call entity's clean up functions
+        if entity.on_clear:
+            for function in entity.on_clear.functions:
+                function()
 
-    def DeleteEntity(self, key):
-        pass
+
+
+        remove_entity = self.entities.pop(entity.key)
+        del remove_entity

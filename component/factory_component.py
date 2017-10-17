@@ -1,8 +1,11 @@
 class FactoryComponent():
     def __init__(self):
         self.orders = []
+        self.products = []
 
         self.num_products = 0
+
+
 
 
         pass

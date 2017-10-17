@@ -10,23 +10,54 @@ class FactorySystem():
                 # Create orders
                 for order in entity.factory.orders:
 
+                    # An order is a special class that contains an order name
+                    # (e.g. the type of entity to be created)
+                    # and an on_creation() function (described below)
+
                     # Get entity name and args
-                    entity_name = order.name
-
-
-                    # Parse sepcifications
-                    on_creation = order.on_creation
+                    order_name = order.name
 
                     # Order entity
-                    new_entity = world.entity_manager.CreateEntity(entity_name)
+                    product = world.entity_manager.CreateEntity(order_name)
 
-                    # Attach components
-                    on_creation(new_entity)
+                    # Parse specifications
+                    # Call the function 'on_creation', specified by the entity
+                    # or system that created the original order
+                    # e.g. for a bullet, the order was probably created by
+                    # the shooting_action_processing_system
+                    # The on_creation function's purpose is to create the order
+                    # with the correct specificity; for instance, the
+                    # shooting_action_processing_system will call for a bullet
+                    # to be created with the correct starting position and
+                    # direciton of travel; these parameters are specified
+                    # by the 'on_creation' function
+                    # As another example, a room is a factory that can produce
+                    # orders, and specifies the location of each order
+                    # with the on_creation function
+                    order.on_creation(product)
+
+
+                    # Attach function to on_clear that will notify the factory when cleared
+                    #order.on_clear.functions.append()
+                    self.AttachOnClearToProduct(entity, product)
+
+
 
                     # Increment number of entities out for factory
-                    entity.factory.num_products += 1
+                    self.AttachProductToEntity(entity, product)
 
 
-                    # Attach function to on_death that will decrement upon death
 
+
+                # Done processing, clear all orders
                 entity.factory.orders = []
+
+
+    def AttachOnClearToProduct(self, entity, product):
+        def new_on_clear_function():
+            entity.factory.products
+
+
+    def AttachProductToEntity(self, entity, product):
+        entity.factory.products.append(product)
+        entity.factory.num_products += 1

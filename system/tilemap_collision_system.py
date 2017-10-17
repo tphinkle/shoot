@@ -36,6 +36,9 @@ class TilemapCollisionSystem():
         for key, entity in world.entity_manager.entities.iteritems():
             if entity.tilemap_collidable != None:
 
+                # Reset collision status
+                entity.tilemap_collidable.collided = False
+
                 # X
                 if entity.kinematics.vx < 0:
                     self.HandleLeftCollision(entity, tilemap)
@@ -58,6 +61,12 @@ class TilemapCollisionSystem():
 
                 if entity.gravity:
                     self.CheckGrounded(entity, tilemap)
+
+
+                # Kill if collided with something
+                if entity.tilemap_collidable.collided == True:
+                    if entity.tilemap_collidable.death_on_collision:
+                        entity.status.hp = 0
 
 
 
@@ -89,6 +98,7 @@ class TilemapCollisionSystem():
 
                     # Tile is obstructing; relocate to proper location
                     else:
+                        entity.tilemap_collidable.collided = True
                         entity.kinematics.x_proposed = (column+1)*16
                         entity.kinematics.vx = 0
                         return
@@ -117,6 +127,7 @@ class TilemapCollisionSystem():
 
                     # Tile is obstructing; relocate to proper location
                     else:
+                        entity.tilemap_collidable.collided = True
                         entity.kinematics.x_proposed = int(16*column - entity.shape.w)
                         entity.kinematics.vx = 0
                         return
@@ -136,6 +147,7 @@ class TilemapCollisionSystem():
 
         # Solid
         if tile.type == 'solid':
+            entity.tilemap_collidable.collided = True
             entity.kinematics.y_proposed = entity.kinematics.y_proposed-(bottom_y%16+1)
             entity.kinematics.vy = 0
             if entity.gravity:
@@ -152,6 +164,7 @@ class TilemapCollisionSystem():
 
         # Ramp
         if tile.type == 'ramp':
+            entity.tilemap_collidable.collided = True
             tile_y = bottom_y - (bottom_y%16)
             floor_y = tile.a + (center_x%16)*(tile.b-tile.a)/16.
             entity.kinematics.y_proposed = entity.kinematics.y_proposed - (bottom_y%16 - floor_y)
@@ -175,6 +188,7 @@ class TilemapCollisionSystem():
             # Loop over columns
             for column in intersecting_columns:
                 if tilemap.tiles[row, column].type == 'solid':
+                    entity.tilemap_collidable.collided = True
                     entity.kinematics.y_proposed = int(16*row - entity.shape.h)
                     entity.kinematics.vy = 0
                     entity.gravity.grounded = True

@@ -199,10 +199,12 @@ class System:
                 self.kinematics_system.ValidatePosition(self.world)
 
 
-                self.status_processing_system.ProcessStatusEffects(self.world)
+                self.status_processing_system.ProcessStatus(self.world)
 
 
+                # Clean up entities
                 self.world.entity_manager.RegisterNewEntities()
+                self.world.entity_manager.CleanUpDeadEntities()
 
 
 

@@ -42,8 +42,7 @@ class ShootingActionProcessingSystem(object):
                 # Fire gun
                 self.FireGun(entity, gun)
 
-                # Reset timer
-                gun.cooldown_timer = 0
+
 
 
         # Stop
@@ -60,31 +59,45 @@ class ShootingActionProcessingSystem(object):
         # Stop
         elif action['trigger'] == 'stop':
 
-            gun.bullet_name = gun.bullet_names[0]
+
+            # Find correct bullet to shoot
+            for i in range(len(gun.bullet_names)):
+                if gun.charge_timer > gun.charge_times[i]:
+                    gun.bullet_name = gun.bullet_names[i]
+
+
 
             # Fire gun
-            self.FireGun(entity, gun)
+            if gun.bullet_name != None and gun.bullets_out < gun.max_bullets_out:
+                self.FireGun(entity, gun)
+
+
 
             # Update status
+            gun.bullet_name = None
+            gun.charge_timer = 0
             gun.status = 'inactive'
 
 
 
     def FireGun(self, entity, gun):
+        # Reset timer
+        gun.cooldown_timer = 0
+
+
+        # Get bullet name
         bullet_name = gun.bullet_name
 
-
+        # Create specifications for bullet
         def on_creation(new_bullet):
 
 
             # Set orientation
             new_bullet.orientation.xorientation = entity.orientation.xorientation
 
-
             # Set x
             if new_bullet.orientation.xorientation == 'right':
                 new_bullet.kinematics.x = entity.kinematics.x + gun.x_offset
-
 
             elif new_bullet.orientation.xorientation == 'left':
 
@@ -106,6 +119,12 @@ class ShootingActionProcessingSystem(object):
 
             # Increase max bullets
             gun.bullets_out += 1
+
+
+            # Add on clear component
+            def ResetBullets():
+                gun.bullets_out = gun.bullets_out - 1
+            new_bullet.on_clear.functions.append(ResetBullets)
 
 
 

@@ -11,5 +11,6 @@ class ControllerInputComponent():
 
         self.action_mapping['LeftRight_Release'] = [{'action':'move', 'trigger':'stop'}]
         self.action_mapping['B_Release'] = [{'action': 'jump', 'trigger':'stop'}]
-        self.action_mapping['Y_Release'] = [{'action':'shoot', 'trigger':'stop', 'gun':'buster'}]
+        self.action_mapping['Y_Release'] = [{'action':'shoot', 'trigger':'stop', 'gun':'charge_buster'},
+         {'action':'shoot', 'trigger':'stop', 'gun':'buster'}]
         self.action_mapping['A_Release'] = [{'action':'dash', 'trigger': 'stop'}]

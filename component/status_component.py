@@ -1,8 +1,11 @@
 class StatusComponent():
     def __init__(self):
-        self.stunned = False
-        self.rooted = False
-        self.poisoned = False
-        self.frozen = False
+        self.hp = None
+
+        self.dead = None
+        self.stunned = None
+        self.rooted = None
+        self.poisoned = None
+        self.frozen = None
 
         self.immunities = []
