@@ -81,6 +81,10 @@ class Prototype2Room(Room):
         self.tilemap.filepath = '/home/prestonh/Desktop/Programming/gamedev/shoot/shoot/resources/rooms/prototype_2/prototype_2.tmp'
         self.tilemap.Load3()
 
+        # Song file
+        #self.song_file_path = '/home/prestonh/Desktop/Programming/gamedev/shoot/shoot/resources/sound/PM_CS_ambiance_6.wav'
+        self.song_file_path = '/home/prestonh/Desktop/Programming/gamedev/shoot/shoot/resources/rooms/prototype_2/prototype_2.wav'
+
         self.display = display_component.DisplayComponent(b'/home/prestonh/Desktop/Programming/gamedev/shoot/shoot/resources/rooms/prototype_2/prototype_2.png')
         self.display.source_rect = sdl2.SDL_Rect(0, 0, 2880, 1760)
         self.display.z = 0

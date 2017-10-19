@@ -39,7 +39,20 @@ import on_clear_component
 # SDL
 import sdl2
 
+'''
+Notes:
 
+    - Look up 'Builder' design pattern, which can set up component-based entity
+one component at a time, based on data
+
+    -
+
+    -
+
+    -
+
+    
+'''
 
 
 

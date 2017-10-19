@@ -6,6 +6,7 @@ import ctypes
 import sdl2
 import sdl2.sdlimage
 import sdl2.sdlttf
+import sdl2.sdlmixer
 
 ###########
 # Game
@@ -25,6 +26,7 @@ import entity_manager
 # System
 import timer as timer
 import render_system
+import sound_system
 import sprite_animation_system
 
 import tile_modifier_system
@@ -66,15 +68,16 @@ class System:
 
     def InitializeSDL(self):
         # SDL sub systems
+        sdl2.SDL_Init(sdl2.SDL_INIT_EVERYTHING)
 
-        # TTF
-        sdl2.sdlttf.TTF_Init()
+
 
         # Video
         sdl2.SDL_Init(sdl2.SDL_INIT_VIDEO)
 
+
         # Window
-        self.window = sdl2.SDL_CreateWindow("Shoot",\
+        self.window = sdl2.SDL_CreateWindow("shoot 0.0.1",\
             sdl2.SDL_WINDOWPOS_UNDEFINED,\
             sdl2.SDL_WINDOWPOS_UNDEFINED,
             640,\
@@ -85,6 +88,27 @@ class System:
         self.sdl_renderer = sdl2.SDL_CreateRenderer(self.window, -1,\
             sdl2.SDL_RENDERER_ACCELERATED)
         sdl2.SDL_SetRenderDrawColor(self.sdl_renderer, 255, 255, 255, 0)
+
+        # Sound (from tutorial: http://lazyfoo.net/SDL_tutorials/lesson11/index.php )
+        # Initialize sdl mixer
+        # Mix_OpenAudio args
+        # First arg (22050) is sound frequency (recommended according to multiple tutorials,
+        # but look into this)
+        # Second arg is sound format
+        # Third arg is number of channels we plan to use (e.g., 2 for stereo sound)
+        # Fourth arg is the sample size (should be 4096)
+        # Audio
+
+        #sdl2.SDL_Init(sdl2.SDL_INIT_AUDIO)    # If using SDL sound; shouldn't do this
+
+        sdl2.sdlmixer.Mix_Init(sdl2.sdlmixer.MIX_INIT_MOD)    # Insert the file formats you wish to allow here, e.g. OGG
+        sdl2.sdlmixer.Mix_OpenAudio(22050, sdl2.sdlmixer.MIX_DEFAULT_FORMAT, 2, 4096)
+
+
+
+        # TTF
+        sdl2.sdlttf.TTF_Init()
+
 
         # Joystick
         sdl2.SDL_Init(sdl2.SDL_INIT_JOYSTICK)
@@ -105,6 +129,7 @@ class System:
 
     def InitializeSubsystems(self):
         # Systems
+        self.sound_system = sound_system.SoundSystem()
         self.render_system = render_system.RenderSystem(self.sdl_renderer, self.window)
         self.sprite_animation_system = sprite_animation_system.SpriteAnimationSystem()
 
@@ -156,6 +181,14 @@ class System:
 
         return inputs
 
+    def Quit(self):
+
+        # Quit mixer
+        #print sdl2.sdlmixer.Mix_QuerySpec()
+        sdl2.sdlmixer.Mix_CloseAudio()
+        sdl2.sdlmixer.Mix_Quit()
+        pass
+
 
     def Run(self):
         # Begin main loop
@@ -202,6 +235,9 @@ class System:
                 self.status_processing_system.ProcessStatus(self.world)
 
 
+
+
+
                 # Clean up entities
                 self.world.entity_manager.RegisterNewEntities()
                 self.world.entity_manager.CleanUpDeadEntities()
@@ -210,11 +246,14 @@ class System:
 
 
 
-            # Render
+            # Render and sound
             if self.render_timer.Update():
                 self.sprite_animation_system.UpdateEntitySprites(self.world, self.render_timer.dt)
                 self.render_system.RenderAll(self.world, self.render_timer.dt)
+                self.sound_system.PlaySounds(self.world, self.render_timer.dt)
 
 
+
+        self.Quit()
 
         return 0
