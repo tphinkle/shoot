@@ -250,7 +250,7 @@ class System:
             if self.render_timer.Update():
                 self.sprite_animation_system.UpdateEntitySprites(self.world, self.render_timer.dt)
                 self.render_system.RenderAll(self.world, self.render_timer.dt)
-                self.sound_system.PlaySounds(self.world, self.render_timer.dt)
+                self.sound_system.Update(self.world, self.render_timer.dt)
 
 
 

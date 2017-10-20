@@ -32,6 +32,3 @@ class World():
     def LoadPrototype2Room(self):
         # Load the actual room
         self.room = room.Prototype2Room()
-
-        # Set the music for the world
-        self.song_file_path = self.room.song_file_path
