@@ -35,6 +35,7 @@ import friction_component
 import sound_component
 import shooting_action_component
 import on_clear_component
+import movement_action_component
 
 # SDL
 import sdl2
@@ -51,7 +52,7 @@ one component at a time, based on data
 
     -
 
-    
+
 '''
 
 
@@ -102,16 +103,23 @@ class EntityManager():
         hero.actions = actions_component.ActionsComponent()
 
         # Running action
-        hero.running_floating_action = running_floating_action_component.RunningFloatingActionComponent()
-        hero.running_floating_action.direction = 'right'
-        hero.running_floating_action.running_base_speed = 128
-        hero.running_floating_action.floating_base_speed = 128
+        hero.movement_action = movement_action_component.NormalMovementActionComponent()
+        hero.movement_action.movement_type = 'normal'
+        hero.movement_action.direction = 'right'
+        hero.movement_action.running_base_speed = 128
+        hero.movement_action.floating_base_speed = 128
 
         # Jumping action
         hero.jumping_action = jumping_action_component.JumpingActionComponent()
         hero.jumping_action.period = .25
         hero.jumping_action.initial_speed = 300.
         hero.jumping_action.acceleration = 640.
+
+        # Air jumping action
+        hero.airjumping_action = jumping_action_component.JumpingActionComponent()
+        hero.airjumping_action.period = .25
+        hero.airjumping_action.initial_speed = 300.
+        hero.airjumping_action.acceleration = 640.
 
         # Dashing action
         hero.dashing_action = dashing_action_component.DashingActionComponent()
@@ -308,10 +316,10 @@ class EntityManager():
 
 
         # Panning
-        camera.panning_action = panning_action_component.PanningActionComponent()
-        camera.panning_action.xspeed = 128.
-        camera.panning_action.yspeed = 640.
-        camera.panning_action.period = 0
+        camera.free_movement_action = movement_action_component.FreeMovementActionComponent()
+        camera.free_movement_action.xspeed = 128.
+        camera.free_movement_action.yspeed = 640.
+        camera.free_movement_action.period = 0
 
         # Shape
         camera.shape = shape_component.ShapeComponent()
@@ -503,6 +511,7 @@ class EntityManager():
         we should have better creation routines for the camera
         '''
 
+        print entity_name
 
         entity = self.entity_creation_routines[entity_name]()
 

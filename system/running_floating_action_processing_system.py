@@ -8,9 +8,15 @@ import constants
 sys.path.append('../components/')
 import kinematics_component
 
-class RunningFloatingActionProcessingSystem():
+import helper_systems
+
+class RunningFloatingProcessingSystem(helper_systems.Subject):
 
     def __init__(self):
+
+        # Initialize observer class
+        helper_systems.Subject.__init__(self)
+
 
         pass
 

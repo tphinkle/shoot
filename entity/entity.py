@@ -8,7 +8,7 @@ class Entity():
 
 
 
-
+        self.sound = None
         self.display = None
         self.sprite_animation = None
         self.kinematics = None

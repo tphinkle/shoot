@@ -5,12 +5,22 @@ import sys
 sys.path.append('../component/')
 import factory_component
 
-class ShootingActionProcessingSystem(object):
+import helper_systems
+
+class ShootingActionProcessingSystem(helper_systems.Subject):
 
 
 
     def __init__(self):
+
+        # Initialize observer class
+        helper_systems.Subject.__init__(self)
+
         pass
+
+    def InterpretRawCommand(self, raw_command):
+        pass
+
 
     def Trigger(self, entity, action):
 
@@ -31,23 +41,32 @@ class ShootingActionProcessingSystem(object):
             self.TriggerChargeShot(entity, gun, action)
 
 
+
+
+
+
     def TriggerNormalShot(self, entity, gun, action):
         # Start
         if action['trigger'] == 'start':
-
-
             # Check cooldown
             if gun.cooldown_timer >= gun.cooldown and gun.bullets_out < gun.max_bullets_out:
+
+                # NotifyObservers gun shot
+                self.NotifyObservers(entity, gun.name + 'fired')
 
                 # Fire gun
                 self.FireGun(entity, gun)
 
-
+                # Set to inactive status
+                gun.status = 'inactive'
 
 
         # Stop
         elif action['trigger'] == 'stop':
             pass
+
+
+
 
 
     def TriggerChargeShot(self, entity, gun, action):
@@ -60,16 +79,21 @@ class ShootingActionProcessingSystem(object):
         elif action['trigger'] == 'stop':
 
 
-            # Find correct bullet to shoot
-            for i in range(len(gun.bullet_names)):
-                if gun.charge_timer > gun.charge_times[i]:
-                    gun.bullet_name = gun.bullet_names[i]
+            # Make sure charged long enough to actually fire a shot
+            if gun.charge_timer >= gun.charge_times[0]:
+
+
+                # Find correct bullet to shoot
+                for i in range(len(gun.bullet_names)):
+                    if gun.charge_timer > gun.charge_times[i]:
+                        gun.bullet_name = gun.bullet_names[i]
 
 
 
-            # Fire gun
-            if gun.bullet_name != None and gun.bullets_out < gun.max_bullets_out:
-                self.FireGun(entity, gun)
+                # Fire gun
+                if gun.bullets_out < gun.max_bullets_out:
+                    self.NotifyObservers(entity, gun.name + 'fired')
+                    self.FireGun(entity, gun)
 
 
 
@@ -81,12 +105,17 @@ class ShootingActionProcessingSystem(object):
 
 
     def FireGun(self, entity, gun):
+
+
         # Reset timer
         gun.cooldown_timer = 0
 
 
         # Get bullet name
         bullet_name = gun.bullet_name
+
+
+
 
         # Create specifications for bullet
         def on_creation(new_bullet):
@@ -135,6 +164,15 @@ class ShootingActionProcessingSystem(object):
 
 
 
+        # Notify observers
+        self.NotifyObservers(entity, bullet_name + 'fired')
+
+
+
+
+
+
+
     def ProcessAction(self, world, dt):
         for key, entity in world.entity_manager.entities.iteritems():
             if entity.shooting_action != None:
@@ -151,20 +189,24 @@ class ShootingActionProcessingSystem(object):
     def ProcessNormalGun(self, entity, gun, dt):
         # Active
         if gun.status == 'active':
+            self.NotifyObservers(entity, gun.name + 'active')
             pass
 
         # Inactive
         elif gun.status == 'inactive':
+            self.NotifyObservers(entity, gun.name + 'inactive')
             gun.cooldown_timer += dt
 
 
     def ProcessChargeGun(self, entity, gun, dt):
         # Active
         if gun.status == 'active':
+            self.NotifyObservers(entity, gun.name + 'active')
             gun.charge_timer += dt
 
 
 
         # Inactive
         elif gun.status == 'inactive':
+            self.NotifyObservers(entity, gun.name + 'inactive')
             gun.cooldown_timer += dt

@@ -1,4 +1,9 @@
-class SpriteAnimationSystem():
+import helper_systems
+
+
+
+
+class SpriteAnimationSystem(helper_systems.Observer):
     def __init__(self):
         pass
 
@@ -89,7 +94,7 @@ class SpriteAnimationSystem():
 
 
 
-
+        '''
         # Running
         elif hero.running_floating_action.status == 'active':
             if hero.running_floating_action.mode == 'running':
@@ -104,6 +109,6 @@ class SpriteAnimationSystem():
         else:
             self.SetEntitySpriteAnimation(hero, 'default', dt)
 
-
+        '''
 
         # Floating

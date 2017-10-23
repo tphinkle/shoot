@@ -9,13 +9,22 @@ import kinematics_component
 sys.path.append('../functions/')
 import constants
 
+import helper_systems
 
 
-class DashingActionProcessingSystem(object):
+
+class DashingActionProcessingSystem(helper_systems.Subject):
 
     def __init__(self):
-        pass
 
+        # Initialize observer class
+        helper_systems.Subject.__init__(self)
+
+    def InterpretRawCommand(self, entity, raw_proposed_action):
+        if raw_proposed_action['action'] == 'dash' and raw_proposed_action['trigger'] == 'start':
+            direction = entity.orientation.xorientation
+
+        return 'dash' + direction
 
 
     def Trigger(self, entity, action):
@@ -44,7 +53,7 @@ class DashingActionProcessingSystem(object):
 
 
 
-    def ProcessAction(self, world, dt):
+    def ProcessAction(self, entity, world, dt):
         for key, entity in world.entity_manager.entities.iteritems():
             if entity.dashing_action:
 

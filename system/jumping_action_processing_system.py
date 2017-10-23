@@ -8,13 +8,25 @@ import kinematics_component
 sys.path.append('../functions/')
 import constants
 
+import helper_systems
 
-class JumpingActionProcessingSystem(object):
+
+class JumpingActionProcessingSystem(helper_systems.Subject):
 
     def __init__(self):
-        pass
 
 
+        # Initialize observer class
+        helper_systems.Subject.__init__(self)
+
+
+    def InterpretRawCommand(self, entity, action):
+        if raw_proposed_action['action'] == 'jump' and raw_proposed_action['trigger'] == 'start':
+            if entity.gravity.grounded == True:
+                action = 'jump'
+
+            elif entity.gravity.grounded == False:
+                pass
 
 
     def Trigger(self, entity, action):

@@ -25,9 +25,13 @@ import entity_manager
 
 # System
 import timer as timer
-import render_system
-import sound_system
+
 import sprite_animation_system
+import render_system
+
+import sound_system
+import audio_system
+
 
 import tile_modifier_system
 
@@ -130,6 +134,7 @@ class System:
     def InitializeSubsystems(self):
         # Systems
         self.sound_system = sound_system.SoundSystem()
+        self.audio_system = audio_system.AudioSystem()
         self.render_system = render_system.RenderSystem(self.sdl_renderer, self.window)
         self.sprite_animation_system = sprite_animation_system.SpriteAnimationSystem()
 
@@ -137,7 +142,7 @@ class System:
         # Actions systems
         self.controller_input_system = controller_input_system.ControllerInputSystem(self.joystick)
         self.actions_processing_system = actions_processing_system.ActionsProcessingSystem()
-
+        self.actions_processing_system.AddObserversToSubsystems([self.sprite_animation_system, self.sound_system])
 
 
         self.tile_modifier_system = tile_modifier_system.TileModifierSystem()
@@ -154,8 +159,6 @@ class System:
         self.friction_system = friction_system.FrictionSystem()
         self.ai_system = ai_system.AISystem()
         self.tilemap_collision_system = tilemap_collision_system.TilemapCollisionSystem()
-
-
         self.status_processing_system = status_processing_system.StatusProcessingSystem()
 
     def InitializeWorld(self):
@@ -212,7 +215,9 @@ class System:
                 inputs = self.GetInputs()
                 self.controller_input_system.HandleInputEventDriven(self.joystick, inputs, self.world)
                 self.ai_system.ProcessAI(self.world)
-                self.actions_processing_system.ProcessActions(self.world, self.game_timer.dt)
+
+
+                self.actions_processing_system.Update(self.world, self.game_timer.dt)
 
 
 
@@ -250,7 +255,9 @@ class System:
             if self.render_timer.Update():
                 self.sprite_animation_system.UpdateEntitySprites(self.world, self.render_timer.dt)
                 self.render_system.RenderAll(self.world, self.render_timer.dt)
-                self.sound_system.Update(self.world, self.render_timer.dt)
+
+                self.sound_system.Update(self.world)
+                self.audio_system.Update(self.world, self.render_timer.dt)
 
 
 
