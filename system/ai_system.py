@@ -82,4 +82,4 @@ class AISystem():
 
 
 
-        entity.actions.proposed_actions.append({'action':'pan', 'trigger':trigger, 'xdirection':xdirection, 'ydirection':ydirection})
+        entity.actions.proposed_actions.append({'action':'move', 'trigger':trigger, 'xdirection':xdirection, 'ydirection':ydirection})

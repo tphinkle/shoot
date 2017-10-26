@@ -74,9 +74,9 @@ class ControllerInputSystem:
 
                 # Convert button presses into proposed actions
                 for button in buttons:
-                    actions = entity.controller_input.action_mapping[button]
-                    for action in actions:
-                        entity.actions.proposed_actions.append(action)
+                    commands = entity.controller_input.command_mapping[button]
+                    for command in commands:
+                        entity.active.commands.append(command)
 
 
     def UpdateDPad(self, joystick):

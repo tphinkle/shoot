@@ -1,8 +1,14 @@
-class JumpingActionComponent():
+# Python standard library
+import sys
+
+# Game-specific
+import active_component
+
+class JumpActionComponent(active_component.Action):
     def __init__(self):
-        # State and modifiers
-        self.name = 'jumping'
-        self.status = 'inactive'
+        active_component.Action.__init__(self, action_class = 'jump', action_name = 'jump')
+
+
         self.timer = 0
         self.args = []
         self.period = 0
@@ -13,11 +19,13 @@ class JumpingActionComponent():
         self.base_speed = 0
 
 
-class AirJumpingActionComponent():
+class AirJumpActionComponent(active_component.Action):
     def __init__(self):
+        active_component.Action.__init__(self, action_class = 'jump', action_name = 'airjump')
+
+
         # State and modifiers
-        self.name = 'airjump'
-        self.status = 'inactive'
+
         self.timer = 0
         self.args = []
         self.period = 0

@@ -7,6 +7,9 @@ class SpriteAnimationSystem(helper_systems.Observer):
     def __init__(self):
         pass
 
+    def OnNotify(self, world, dt):
+        pass
+
     def UpdateEntitySprites(self, world, dt):
         for key, entity in world.entity_manager.entities.iteritems():
             if entity.sprite_animation:
@@ -84,11 +87,11 @@ class SpriteAnimationSystem(helper_systems.Observer):
     def UpdateHeroSprite(self, hero, dt):
 
         # Dashing
-        if hero.dashing_action.status == 'active':
+        if hero.dash_action.active_status == 'active':
             self.SetEntitySpriteAnimation(hero, 'dashing', dt)
 
         # Jumping
-        elif hero.jumping_action.status == 'active':
+        elif hero.jump_action.active_status == 'active':
             self.SetEntitySpriteAnimation(hero, 'jumping', dt)
 
 

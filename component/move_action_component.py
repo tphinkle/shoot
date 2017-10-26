@@ -1,15 +1,18 @@
-class MovementActionComponentSystem():
-    def __init__(self):
-        pass
+# Python standard library
+import sys
+
+# Game-specific
+import active_component
 
 
-class NormalMovementActionComponent(MovementActionComponentSystem):
+class NormalMoveActionComponent(active_component.Action):
     def __init__(self):
-        MovementActionComponentSystem.__init__(self)
+
+
+        active_component.Action.__init__(self, 'move', 'normalmove')
 
         # State and modifiers
         self.movement_type = 'normal'
-        self.status = 'inactive'
         self.mode = None
         self.timer = 0
         self.direction = None
@@ -22,13 +25,13 @@ class NormalMovementActionComponent(MovementActionComponentSystem):
         self.floating_base_speed = None
 
 
-class FreeMovementActionComponent(MovementActionComponentSystem):
+class FreeMoveActionComponent(active_component.Action):
     def __init__(self):
-        MovementActionComponentSystem.__init__(self)
+        active_component.Action.__init__(self, 'move', 'freemove')
 
         # State and modifiers
         self.movement_type = 'free'
-        self.status = 'inactive'
+
         self.mode = None
         self.timer = 0
         self.direction = None

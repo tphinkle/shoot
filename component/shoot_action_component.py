@@ -1,9 +1,24 @@
-class ShootingActionComponent(object):
+# Python standard library
+import sys
+
+# Game-specific
+import active_component
+
+
+class ShootActionComponent(active_component.Action):
+
+
     def __init__(self):
+        active_component.Action.__init__(self, 'shoot', 'shoot')
+
         self.guns = {}
 
     def AttachGun(self, gun):
         self.guns[gun.name] = gun
+
+class GunChargeActionComponent(active_component.Action):
+    def __init__(self):
+        pass
 
 
 class Gun(object):

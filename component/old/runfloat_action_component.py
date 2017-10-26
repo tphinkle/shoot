@@ -1,4 +1,4 @@
-class RunningFloatingActionComponent():
+class RunFloatActionComponent():
     def __init__(self):
         # State and modifiers
         self.name = 'runningfloating'

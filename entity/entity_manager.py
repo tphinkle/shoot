@@ -18,24 +18,27 @@ import gravity_component
 import kinematics_component
 
 import shape_component
-import actions_component
+import active_component
 import controller_input_component
 import ai_component
 import following_ai_component
 import tilemap_collidable_component
 import orientation_component
-import running_floating_action_component
-import panning_action_component
-import jumping_action_component
-import dashing_action_component
+
+
+import jump_action_component
+import dash_action_component
+import shoot_action_component
+import move_action_component
+
 import status_component
 import factory_component
 import sprite_animation_component
 import friction_component
 import sound_component
-import shooting_action_component
+
 import on_clear_component
-import movement_action_component
+
 
 # SDL
 import sdl2
@@ -100,37 +103,38 @@ class EntityManager():
 
 
         # Actions component
-        hero.actions = actions_component.ActionsComponent()
+        hero.active = active_component.ActiveComponent()
 
         # Running action
-        hero.movement_action = movement_action_component.NormalMovementActionComponent()
-        hero.movement_action.movement_type = 'normal'
-        hero.movement_action.direction = 'right'
-        hero.movement_action.running_base_speed = 128
-        hero.movement_action.floating_base_speed = 128
+        hero.move_action = move_action_component.NormalMoveActionComponent()
+        hero.move_action.movement_type = 'normal'
+        hero.move_action.direction = 'right'
+        hero.move_action.runn_base_speed = 128
+        hero.move_action.float_base_speed = 128
+        hero.active.actions.append(hero.move_action)
 
         # Jumping action
-        hero.jumping_action = jumping_action_component.JumpingActionComponent()
-        hero.jumping_action.period = .25
-        hero.jumping_action.initial_speed = 300.
-        hero.jumping_action.acceleration = 640.
+        hero.jump_action = jump_action_component.JumpActionComponent()
+        hero.jump_action.period = .25
+        hero.jump_action.initial_speed = 300.
+        hero.jump_action.acceleration = 640.
+        hero.active.actions.append(hero.jump_action)
 
         # Air jumping action
-        hero.airjumping_action = jumping_action_component.JumpingActionComponent()
-        hero.airjumping_action.period = .25
-        hero.airjumping_action.initial_speed = 300.
-        hero.airjumping_action.acceleration = 640.
+        hero.airjump_action = jump_action_component.AirJumpActionComponent()
+        hero.airjump_action.period = .25
+        hero.airjump_action.initial_speed = 300.
+        hero.airjump_action.acceleration = 640.
+        hero.active.actions.append(hero.airjump_action)
 
         # Dashing action
-        hero.dashing_action = dashing_action_component.DashingActionComponent()
-        hero.dashing_action.period = 0.5
-        hero.dashing_action.base_speed = 256
-
-        # Shooting action
-        hero.shooting_action = shooting_action_component.ShootingActionComponent()
+        hero.dash_action = dash_action_component.DashActionComponent()
+        hero.dash_action.period = 0.5
+        hero.dash_action.base_speed = 256
+        hero.active.actions.append(hero.dash_action)
 
         # Buster gun
-        buster = shooting_action_component.NormalGun()
+        buster = shoot_action_component.NormalGun()
         buster.name = 'buster'
         buster.max_bullets_out = 3
         buster.owner = hero
@@ -138,11 +142,18 @@ class EntityManager():
         buster.bullet_name = 'buster_shot'
         buster.x_offset = 22
         buster.y_offset = 16
-        hero.shooting_action.AttachGun(buster)
 
 
+
+        # Shooting action
+        hero.shoot_buster_action = shoot_action_component.ShootActionComponent()
+        hero.shoot_buster_action.gun = buster
+        hero.active.actions.append(hero.shoot_buster_action)
+
+
+        '''
         # Charge buster gun
-        charge_buster = shooting_action_component.ChargeGun()
+        charge_buster = shoot_action_component.ChargeGun()
         charge_buster.name = 'charge_buster'
         charge_buster.max_bullets_out = 3
         charge_buster.owner = hero
@@ -151,7 +162,40 @@ class EntityManager():
         charge_buster.bullet_names = ['charge_buster_shot_lite', 'charge_buster_shot_medium', 'charge_buster_shot_heavy']
         charge_buster.x_offset = 22
         charge_buster.y_offset = 16
-        hero.shooting_action.AttachGun(charge_buster)
+        hero.shoot_action.AttachGun(charge_buster)
+        '''
+
+        # Controller input component
+        hero.controller_input = controller_input_component.ControllerInputComponent()
+
+        hero.controller_input.command_mapping['Left_Press'] = [{'action': hero.move_action, 'trigger':'start', 'direction':'left'}]
+        hero.controller_input.command_mapping['Right_Press'] = [{'action': hero.move_action, 'trigger':'start', 'direction':'right'}]
+
+        hero.controller_input.command_mapping['LeftRight_Release'] = [{'action':hero.move_action, 'trigger':'stop'}]
+
+
+        # Shooting class
+        # Needs class, action, gun, and trigger
+        hero.controller_input.command_mapping['Y_Press'] = [{'action':hero.shoot_buster_action, 'trigger':'start'}]
+        hero.controller_input.command_mapping['Y_Release'] = [{'action':hero.shoot_buster_action, 'trigger':'stop'}]
+
+
+
+
+        # Dashing class
+        # Need class, trigger
+        hero.controller_input.command_mapping['A_Press'] = [{'action':hero.dash_action, 'trigger': 'start'}]
+        hero.controller_input.command_mapping['A_Release'] = [{'action':hero.dash_action, 'trigger': 'stop'}]
+
+
+
+
+        # Jumping class
+        # Needs trigger, start, stop
+        hero.controller_input.command_mapping['B_Press'] = [{'action': hero.jump_action,  'trigger':'start'},
+        {'action': hero.airjump_action, 'trigger':'start'}]
+        hero.controller_input.command_mapping['B_Release'] = [{'action': hero.jump_action, 'trigger':'stop'},
+        {'action': hero.airjump_action, 'trigger':'stop'}]
 
 
 
@@ -169,8 +213,7 @@ class EntityManager():
 
 
 
-        # Controller input component
-        hero.controller_input = controller_input_component.ControllerInputComponent()
+
 
         # Tilemap collidable component
         hero.tilemap_collidable = tilemap_collidable_component.TilemapCollidableComponent()
@@ -193,8 +236,8 @@ class EntityManager():
         hero.sprite_animation = sprite_animation_component.SpriteAnimationComponent()
 
 
-        running_animation = sprite_animation_component.Animation('running')
-        running_animation.rects = [sdl2.SDL_Rect(319, 19, 30, 34),
+        run_animation = sprite_animation_component.Animation('run')
+        run_animation.rects = [sdl2.SDL_Rect(319, 19, 30, 34),
 		sdl2.SDL_Rect(350, 19, 20, 34),
 		sdl2.SDL_Rect(371, 18, 23, 35),
 		sdl2.SDL_Rect(394, 19, 32, 34),
@@ -205,25 +248,25 @@ class EntityManager():
 		sdl2.SDL_Rect(538, 19, 31, 34),
 		sdl2.SDL_Rect(570, 20, 34, 33),
 		sdl2.SDL_Rect(604, 20, 29, 33)]
-        running_animation.clock = 0.
-        running_animation.period = .05
-        running_animation.total_frames = len(running_animation.rects)
-        running_animation.type = 'cyclical'
-        hero.sprite_animation.animations.append(running_animation)
+        run_animation.clock = 0.
+        run_animation.period = .05
+        run_animation.total_frames = len(run_animation.rects)
+        run_animation.type = 'cyclical'
+        hero.sprite_animation.animations.append(run_animation)
 
-        shooting_animation = sprite_animation_component.Animation('shooting')
-        shooting_animation.rects = [sdl2.SDL_Rect(6, 167, 30, 34),
+        shoot_animation = sprite_animation_component.Animation('shoot')
+        shoot_animation.rects = [sdl2.SDL_Rect(6, 167, 30, 34),
         sdl2.SDL_Rect(41, 167, 29, 33)]
 
-        shooting_animation.clock = 0.
-        shooting_animation.period = .05
-        shooting_animation.total_frames = len(shooting_animation.rects)
-        shooting_animation.type = 'terminating'
-        hero.sprite_animation.animations.append(shooting_animation)
+        shoot_animation.clock = 0.
+        shoot_animation.period = .05
+        shoot_animation.total_frames = len(shoot_animation.rects)
+        shoot_animation.type = 'terminating'
+        hero.sprite_animation.animations.append(shoot_animation)
 
 
-        running_shooting_animation = sprite_animation_component.Animation('running_shooting')
-        running_shooting_animation.rects = [sdl2.SDL_Rect(290, 71, 29, 34),
+        runshoot_animation = sprite_animation_component.Animation('runshoot')
+        runshoot_animation.rects = [sdl2.SDL_Rect(290, 71, 29, 34),
 		sdl2.SDL_Rect(319, 70, 32, 35),
 		sdl2.SDL_Rect(351, 71, 35, 34),
 		sdl2.SDL_Rect(387, 72, 38, 33),
@@ -233,53 +276,53 @@ class EntityManager():
 		sdl2.SDL_Rect(524, 71, 35, 34),
 		sdl2.SDL_Rect(560, 72, 37, 33),
 		sdl2.SDL_Rect(597, 72, 35, 33)]
-        running_shooting_animation.clock = 0.
-        running_shooting_animation.period = .05
-        running_shooting_animation.total_frames = len(running_animation.rects)
-        running_shooting_animation.type = 'cyclical'
-        hero.sprite_animation.animations.append(running_shooting_animation)
+        runshoot_animation.clock = 0.
+        runshoot_animation.period = .05
+        runshoot_animation.total_frames = len(runshoot_animation.rects)
+        runshoot_animation.type = 'cyclical'
+        hero.sprite_animation.animations.append(runshoot_animation)
 
 
-        floating_animation = sprite_animation_component.Animation('floating')
-        floating_animation.rects = [sdl2.SDL_Rect(5, 73, 24, 37),
+        float_animation = sprite_animation_component.Animation('float')
+        float_animation.rects = [sdl2.SDL_Rect(5, 73, 24, 37),
 		sdl2.SDL_Rect(34, 69, 15, 41),
 		sdl2.SDL_Rect(55, 64, 19, 46),
 		sdl2.SDL_Rect(77, 69, 23, 41),
 		sdl2.SDL_Rect(102, 68, 27, 42),
 		sdl2.SDL_Rect(134, 72, 24, 38),
 		sdl2.SDL_Rect(159, 78, 30, 32)]
-        floating_animation.clock = 0.
-        floating_animation.period = .05
-        floating_animation.total_frames = len(floating_animation.rects)
-        hero.sprite_animation.animations.append(floating_animation)
+        float_animation.clock = 0.
+        float_animation.period = .05
+        float_animation.total_frames = len(float_animation.rects)
+        hero.sprite_animation.animations.append(float_animation)
 
 
-        dashing_animation = sprite_animation_component.Animation('dashing')
-        dashing_animation.rects = [sdl2.SDL_Rect(287, 127, 28, 31),
+        dash_animation = sprite_animation_component.Animation('dash')
+        dash_animation.rects = [sdl2.SDL_Rect(287, 127, 28, 31),
         sdl2.SDL_Rect(319, 132, 38, 26)]
-        dashing_animation.clock = 0.
-        dashing_animation.period = .05
-        dashing_animation.total_frames = len(dashing_animation.rects)
-        dashing_animation.type = 'terminating'
-        hero.sprite_animation.animations.append(dashing_animation)
+        dash_animation.clock = 0.
+        dash_animation.period = .05
+        dash_animation.total_frames = len(dash_animation.rects)
+        dash_animation.type = 'terminating'
+        hero.sprite_animation.animations.append(dash_animation)
 
-        jumping_animation = sprite_animation_component.Animation('jumping')
-        jumping_animation.rects = [sdl2.SDL_Rect(5, 73, 24, 37),
+        jump_animation = sprite_animation_component.Animation('jump')
+        jump_animation.rects = [sdl2.SDL_Rect(5, 73, 24, 37),
 		sdl2.SDL_Rect(34, 69, 15, 41),
 		sdl2.SDL_Rect(55, 64, 19, 46)]
-        jumping_animation.clock = 0.
-        jumping_animation.period = .15
-        jumping_animation.total_frames = len(jumping_animation.rects)
-        jumping_animation.type = 'terminating'
-        hero.sprite_animation.animations.append(jumping_animation)
+        jump_animation.clock = 0.
+        jump_animation.period = .15
+        jump_animation.total_frames = len(jump_animation.rects)
+        jump_animation.type = 'terminating'
+        hero.sprite_animation.animations.append(jump_animation)
 
-        floating_animation = sprite_animation_component.Animation('floating')
-        floating_animation.rects = [sdl2.SDL_Rect(77, 69, 23, 41)]
-        floating_animation.clock = 0.
-        floating_animation.period = .25
-        floating_animation.total_frames = len(floating_animation.rects)
-        floating_animation.type = 'terminating'
-        hero.sprite_animation.animations.append(floating_animation)
+        float_animation = sprite_animation_component.Animation('float')
+        float_animation.rects = [sdl2.SDL_Rect(77, 69, 23, 41)]
+        float_animation.clock = 0.
+        float_animation.period = .25
+        float_animation.total_frames = len(float_animation.rects)
+        float_animation.type = 'terminating'
+        hero.sprite_animation.animations.append(float_animation)
 
 
         default_animation = sprite_animation_component.Animation('default')
@@ -315,19 +358,22 @@ class EntityManager():
         camera.kinematics.y_proposed = camera.kinematics.y
 
 
+        # Actions
+        camera.active = active_component.ActiveComponent()
+
+
         # Panning
-        camera.free_movement_action = movement_action_component.FreeMovementActionComponent()
-        camera.free_movement_action.xspeed = 128.
-        camera.free_movement_action.yspeed = 640.
-        camera.free_movement_action.period = 0
+        camera.free_move_action = move_action_component.FreeMoveActionComponent()
+        camera.free_move_action.xspeed = 128.
+        camera.free_move_action.yspeed = 640.
+        camera.free_move_action.period = 0
+        camera.active.actions.append(camera.free_move_action)
 
         # Shape
         camera.shape = shape_component.ShapeComponent()
         camera.shape.w = 320
         camera.shape.h = 240
 
-        # Actions
-        camera.actions = actions_component.ActionsComponent()
 
         # AI
         camera.ai = ai_component.AIComponent()

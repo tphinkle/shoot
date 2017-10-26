@@ -1,10 +1,18 @@
-class DashingActionComponent():
+# Python standard library
+import sys
+
+# Game-specific
+import active_component
+
+
+class DashActionComponent(active_component.Action):
     def __init__(self):
-        # State and modifiers
-        self.name = 'dashing'
+        active_component.Action.__init__(self, action_class = 'dash', action_name = 'dash')
+
+
         self.base_speed = None
         self.speed_augmentations = 0
-        self.status = 'inactive'
+
         self.args = []
         self.period = 1.
 

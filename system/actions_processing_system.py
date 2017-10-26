@@ -8,10 +8,10 @@ import tile_functions
 
 
 # Subsystems
-import movement_action_processing_system
-import jumping_action_processing_system
-import dashing_action_processing_system
-import shooting_action_processing_system
+import move_action_processing_system
+import jump_action_processing_system
+import dash_action_processing_system
+import shoot_action_processing_system
 
 
 class ActionsProcessingSystem():
@@ -25,40 +25,17 @@ class ActionsProcessingSystem():
         '''
         Sub-systems
         '''
-        #self.running_floating_action_processing_system = running_floating_action_processing_system.RunningFloatingActionProcessingSystem()
-        self.movement_action_processing_system = movement_action_processing_system.MovementActionProcessingSystem()
-        self.jumping_action_processing_system = jumping_action_processing_system.JumpingActionProcessingSystem()
-        self.dashing_action_processing_system = dashing_action_processing_system.DashingActionProcessingSystem()
-        #self.panning_action_processing_system = panning_action_processing_system.PanningActionProcessingSystem()
-        self.shooting_action_processing_system = shooting_action_processing_system.ShootingActionProcessingSystem()
+        self.move_action_processing_system = move_action_processing_system.MoveActionProcessingSystem()
+        self.jump_action_processing_system = jump_action_processing_system.JumpActionProcessingSystem()
+        self.dash_action_processing_system = dash_action_processing_system.DashActionProcessingSystem()
+        self.shoot_action_processing_system = shoot_action_processing_system.ShootActionProcessingSystem()
 
 
-        self.subsystems = []
-        self.subsystems.append(self.movement_action_processing_system)
-        #self.subsystems.append(self.running_floating_action_processing_system)
-        self.subsystems.append(self.jumping_action_processing_system)
-        self.subsystems.append(self.dashing_action_processing_system)
-        #self.subsystems.append(self.panning_action_processing_system)
-        self.subsystems.append(self.shooting_action_processing_system)
-
-        self.action_process_map = {}
-
-
-
-        # Horizontal motion
-        self.action_process_map['move'] = self.TriggerMove
-
-        # Dashing action
-        self.action_process_map['dash'] = self.TriggerDash
-
-        # Jumping (jump, double jump, etc.)
-        self.action_process_map['jump'] = self.TriggerJump
-
-        # Panning (cameras)
-        #self.action_process_map['pan'] = self.TriggerPan
-
-        # Shoot buster
-        self.action_process_map['shoot'] = self.TriggerShoot
+        self.subsystems_map = {}
+        self.subsystems_map['move'] = self.move_action_processing_system
+        self.subsystems_map['dash'] = self.dash_action_processing_system
+        self.subsystems_map['jump'] = self.jump_action_processing_system
+        self.subsystems_map['shoot'] = self.shoot_action_processing_system
 
     def AddObserversToSubsystems(self, observers):
         '''
@@ -66,7 +43,7 @@ class ActionsProcessingSystem():
         They need to be notified upon a state change of their Subject
         '''
 
-        for subsystem in self.subsystems:
+        for subsystem in self.subsystems_map.values():
             for observer in observers:
                 subsystem.AddObserver(observer)
 
@@ -80,93 +57,77 @@ class ActionsProcessingSystem():
         # Trigger actions
         for key, entity in world.entity_manager.entities.iteritems():
 
-
             # Process entity actions
-            if entity.actions != None:
-                self.InterpretRawCommands(entity)
+            if entity.active != None:
+
+                self.UnpauseEntityActions(entity)
+
+                self.SetEntityTriggers(entity)
+
                 self.CheckEntityInterrupts(entity)
-                self.ProcessCommands(entity)
 
-                self.ClearEntityProposedActions(entity)
+                self.ProcessEntityTriggers(entity)
 
-                self.CheckEntityOverrides(entity, dt)
+                self.CheckEntityOverrides(entity)
 
-                self.ProcessActions(entity, dt)
+                self.ProcessEntityActions(entity, world, dt)
 
+                self.ClearEntityCommands(entity)
 
-
-
-    def ProcessActions(self, entity):
-        for subsystem in self.subsystems:
-            subsystem.ProcessAction(entity, dt)
-
-    def GetSubsystem(self, action):
-        if action['class'] == 'move':
-            return self.running_floating_action_processing_system
-
-        elif action['class'] == 'jump':
-            return self.jumping_action_processing_system
-
-        elif action['class'] == 'dash':
-            return self.dashing_action_processing_system
-
-        elif action['class'] == 'shoot':
-            return self.subsystems.append(self.shooting_action_processing_system)
+    def UnpauseEntityActions(self, entity):
+        for action in entity.active.actions:
+            if action.active_status == 'paused':
+                action.active_status = 'active'
 
 
-
-
-    def InterpretRawCommands(self, entity):
-
-        commands = []
-        for raw_commands in entity.actions.raw_commands:
-            subsystem = self.GetSubsystem
-            command = subsystem.InterpretRawCommand(entity, raw_command)
-            commands.append(command)
-
-        entity.commands = commands
-
-
-
-    def CheckEntityOverrides(self, entity):
-        # If action A overrides action B
-        # Set Action B status to 'latent'
-
-
-        pass
+    def SetEntityTriggers(self, entity):
+        for command in entity.active.commands:
+            subsystem = self.subsystems_map[command['action'].action_class]
+            subsystem.SetEntityTrigger(entity, command)
 
 
 
     def CheckEntityInterrupts(self, entity):
+        # If action A interrupts action B
+        # e.g., Move left is triggered while dashing right
+        # The Move Left command triggers dashing to stop
+        # Set action B to trigger 'stop'
+        for command in entity.active.commands:
+            if command['action'] == 'start':
+                print command
+        pass
+
+    def ProcessEntityTriggers(self, entity):
+        for action in entity.active.actions:
+            subsystem = self.subsystems_map[action.action_class]
+            subsystem.ProcessEntityTrigger(entity, world, dt)
+
+
+    def ClearEntityCommands(self, entity):
+        entity.active.commands = []
+        entity.active.raw_commands = []
+
+    def CheckEntityOverrides(self, entity):
+        # If action A overrides action B
+        # Set Action B status to 'pause'
+
+
         pass
 
 
 
 
-    def ProcessCommands(self, entity):
-        for command in entity.actions.commands:
-            self.action_process_map[action['class']](entity, command)
+
+    def ProcessEntityActions(self, entity, world, dt):
+        for action in entity.active.actions:
+
+            subsystem = self.subsystems_map[action.action_class]
+            subsystem.ProcessAction(entity, world, dt)
 
 
 
-    def ClearEntityCommands(self, entity):
-        entity.actions.commands = []
-        entity.actions.raw_commands = []
 
+    def GetActionSubsystemFromCommand(self, command):
+        action_class = self.subsystems_map[command['action'].action_class]
 
-
-    def TriggerMove(self, entity, command):
-        self.movement_action_processing_system.Trigger(entity, command)
-
-
-    def TriggerDash(self, entity, command):
-        self.dashing_action_processing_system.Trigger(entity, command)
-
-
-    def TriggerJump(self, entity, command):
-        self.jumping_action_processing_system.Trigger(entity, command)
-
-
-
-    def TriggerShoot(self, entity, command):
-        self.shooting_action_processing_system.Trigger(entity, command)
+        return self.subsystems_map[action_class]

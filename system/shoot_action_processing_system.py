@@ -7,7 +7,7 @@ import factory_component
 
 import helper_systems
 
-class ShootingActionProcessingSystem(helper_systems.Subject):
+class ShootActionProcessingSystem(helper_systems.Subject):
 
 
 
@@ -18,8 +18,35 @@ class ShootingActionProcessingSystem(helper_systems.Subject):
 
         pass
 
-    def InterpretRawCommand(self, raw_command):
-        pass
+    def SetEntityTrigger(self, entity, command):
+        if command['trigger'] == 'start':
+
+            # start OK
+            if CheckStartTriggerConditions(entity, command):
+                entity.shoot_action.trigger_status = 'start'
+
+            # start not OK
+            else:
+                entity.shoot_action.trigger_status = 'none'
+
+        elif command['trigger'] == 'stop':
+
+            # stop OK
+            if CheckStopTriggerConditions(entity, command):
+                entity.shoot_action.trigger_status = 'stop'
+
+            # stop not OK
+            else:
+                entity.shoot_action.trigger_status = 'none'
+
+    def CheckStartTriggerConditions(self, entity, command):
+        return ((entity.shoot_action.active_status == 'inactive')
+            and (entity.shoot_action.cooldown_timer > entity.shoot_action.cooldown))
+
+
+    def CheckStopTriggerConditions(self, entity, command):
+        return entity.shoot_action.active_status == 'active'
+
 
 
     def Trigger(self, entity, action):
@@ -28,7 +55,7 @@ class ShootingActionProcessingSystem(helper_systems.Subject):
         gun_name = action['gun']
 
         # Get specific gun
-        gun = entity.shooting_action.guns[gun_name]
+        gun = entity.shoot_action.guns[gun_name]
 
         # Get gun type
         gun_type = gun.type
@@ -173,17 +200,18 @@ class ShootingActionProcessingSystem(helper_systems.Subject):
 
 
 
-    def ProcessAction(self, world, dt):
-        for key, entity in world.entity_manager.entities.iteritems():
-            if entity.shooting_action != None:
-                for name, gun in entity.shooting_action.guns.iteritems():
+    def ProcessAction(self, entity, world, dt):
+        '''
+            for name, gun in entity.shoot_action.guns.iteritems():
 
-                    if gun.type == 'normal':
-                        self.ProcessNormalGun(entity, gun, dt)
+                if gun.type == 'normal':
+                    self.ProcessNormalGun(entity, gun, dt)
 
-                    elif gun.type == 'charge':
-                        self.ProcessChargeGun(entity, gun, dt)
+                elif gun.type == 'charge':
+                    self.ProcessChargeGun(entity, gun, dt)
 
+
+        '''
 
 
     def ProcessNormalGun(self, entity, gun, dt):
